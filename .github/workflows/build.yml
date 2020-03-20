@@ -32,7 +32,7 @@ jobs:
           ls -al
         
       - name: Install packages
-        use: mstksg/get-package@v1
+        uses: mstksg/get-package@v1
         with:
           apt-get: $PACKAGES
 
