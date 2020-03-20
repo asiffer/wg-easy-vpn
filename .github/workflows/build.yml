@@ -8,6 +8,7 @@ jobs:
     name: Build all
     env:
       PACKAGES: software-properties-common byacc flex dpkg-dev debhelper crossbuild-essential-armel crossbuild-essential-armhf crossbuild-essential-arm64
+      GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go 1.14.1
@@ -24,7 +25,7 @@ jobs:
 
       - name: Debug
         env:
-          GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
+          GOPATH: $GOPATH
         run: |
           env | grep GO
           go env
@@ -38,7 +39,7 @@ jobs:
 
       - name: Get dependencies
         env:
-          GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
+          GOPATH: $GOPATH
         run: |
           make deps
         working-directory: $GOPATH/src/wg-easy-vpn
