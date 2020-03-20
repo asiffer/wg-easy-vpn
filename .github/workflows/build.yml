@@ -8,7 +8,7 @@ jobs:
     name: Build all
     env:
       PACKAGES: software-properties-common byacc flex dpkg-dev debhelper crossbuild-essential-armel crossbuild-essential-armhf crossbuild-essential-arm64
-      PATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
+      GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go 1.14.1
@@ -38,31 +38,31 @@ jobs:
           apt-get: $PACKAGES
 
       - name: Get dependencies
-        env:
-          GOPATH: $PATH
+        # env:
+        #   GOPATH: $PATH
         run: |
           make deps
-        working-directory: $PATH/src/wg-easy-vpn
+        working-directory: $GOPATH/src/wg-easy-vpn
       
       - name: Build binaries
-        env:
-          GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
+        # env:
+        #   GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
         run: |
           pwd
           debhelper
           make GOARCH=amd64
           make GOARCH=arm64
           make GOARCH=arm GOARM=7
-        working-directory: $PATH/src/wg-easy-vpn
+        working-directory: $GOPATH/src/wg-easy-vpn
     
       - name: Create debian packages
-        env:
-          GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
+        # env:
+          # GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
         run: |
           make debian GOARCH=amd64
           make debian GOARCH=arm64
           make debian GOARCH=arm GOARM=7
-        working-directory: $PATH/src/wg-easy-vpn
+        working-directory: $GOPATH/src/wg-easy-vpn
 
     #   - name: Upload binaries
     #     uses: actions/upload-artifact@v1
