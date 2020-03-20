@@ -48,6 +48,7 @@ jobs:
           GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
         run: |
           pwd
+          debhelper
           cd $GOPATH/src/wg-easy-vpn
           make GOARCH=amd64
           make GOARCH=arm64
