@@ -6,8 +6,8 @@ on:
 jobs:
   build:
     name: Build all
-    # env:
-    #   GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
+    env:
+      GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
