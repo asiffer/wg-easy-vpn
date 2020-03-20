@@ -70,7 +70,7 @@ cover:
 
 debian:
 	@echo "Creating debian package      "
-	dpkg-buildpackage -a $(DPKG_ARCH) -b -us -uc
+	dpkg-buildpackage -d -a $(DPKG_ARCH) -b -us -uc
 	@echo -e ${OK}
 
 doc: 
