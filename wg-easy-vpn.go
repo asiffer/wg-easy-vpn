@@ -26,8 +26,8 @@ func main() {
 		color.Red("%v", err)
 	}
 
-	if doc, err := app.ToMarkdown(); err == nil {
-		fmt.Println(doc)
-	}
+	// if doc, err := app.ToMarkdown(); err == nil {
+	// 	fmt.Println(doc)
+	// }
 
 }

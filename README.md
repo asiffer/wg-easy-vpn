@@ -1,5 +1,5 @@
 # wg-easy-vpn
-A tool to ease Wireguard VPN setup
+A command-line tool to ease Wireguard VPN setup
 
 wg-easy-vpn is a tool designed to ease the set-up of a
 [WireGuard](https://www.wireguard.com/) VPN. In particular you can easily create a server
@@ -23,15 +23,31 @@ the need to have `Go` installed on your host.
 
 ### Debian package
 
-I also made a debian package to make it available on various debian-like platforms.
+Debian packages are also available for different architectures
+to  various debian-like platforms.
 
 ## Usage
 
 We suppose you have a server with a public address
 (reachable through the following domain name: wg.example.net), and you
-want to connect some clients to it.
-First, we create the server:
+want to connect some clients to it. 
+By default server files will be located in `/etc/wireguard` and clients
+files will be located in `/etc/wireguard/clients`, therefore the following
+commands are likely to be run as root.
+
+First, let us create the server (`wg0` is the name of the connection):
 
 ```bash
-wg-easy-vpn create --endpoint wg.example.net
+wg-easy-vpn create --endpoint wg.example.net wg0
 ```
+
+Then you probably need to add several clients:
+
+```bash
+wg-easy-vpn add -c iphone -c myDesktop wg0
+```
+
+Now you can transfer the clients' configuration files
+to the right locations. You can also add the `--qrcode-cli`
+option to print QR code to the cli (android app can take 
+this qr code as input).
