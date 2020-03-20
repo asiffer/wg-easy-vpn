@@ -1,0 +1,52 @@
+name: Build
+on:
+  repository_dispatch:
+    types: update
+
+jobs:
+  build:
+    name: Build all
+    env:
+      PACKAGES: software-properties-common byacc flex dpkg-dev debhelper crossbuild-essential-armel crossbuild-essential-armhf crossbuild-essential-arm64
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.14
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.14
+        id: go
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v1
+
+      - name: Update 
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y $PACKAGES
+          sudo apt-get upgrade -y
+          sudo apt-get autoremove -y
+      
+      - name: Binaries
+        run: |
+          make GOARCH=amd64
+          make GOARCH=arm64
+          make GOARCH=arm GOARM=7
+    
+      - name: Debian
+        run: |
+          make debian GOARCH=amd64
+          make debian GOARCH=arm64
+          make debian GOARCH=arm GOARM=7
+
+    #   - name: Upload binaries
+    #     uses: actions/upload-artifact@v1
+    #     with:
+    #       name: netspot
+    #       path: bin/
+
+
+    #   - name: Upload debian package
+    #     uses: actions/upload-artifact@v1
+    #     with:
+    #       name: netspot-debian-amd64
+    #       path: dist/debian/
