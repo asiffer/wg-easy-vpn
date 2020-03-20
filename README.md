@@ -23,8 +23,8 @@ the need to have `Go` installed on your host.
 
 ### Debian package
 
-Debian packages are also available for different architectures
-to  various debian-like platforms.
+Debian packages will be soon available for different architectures
+to distribute `wg-easy-vpn` to various debian-like platforms.
 
 ## Usage
 
@@ -51,3 +51,7 @@ Now you can transfer the clients' configuration files
 to the right locations. You can also add the `--qrcode-cli`
 option to print QR code to the cli (android app can take 
 this qr code as input).
+
+## Advanced usage
+
+## Issues
