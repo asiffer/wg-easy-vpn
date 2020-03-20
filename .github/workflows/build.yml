@@ -20,11 +20,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 1
-          path: go/src/github.com/asiffer/wg-easy-vpn
+          path: go/src/wg-easy-vpn
 
       - name: Debug
         env:
-          GOPATH: /home/runner/work/asiffer/go
+          GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
         run: |
           env | grep GO
           go env
@@ -34,24 +34,29 @@ jobs:
           
       - name: Update 
         env:
-          GOPATH: /home/runner/work/asiffer/go
+          GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
         run: |
           sudo apt-get update
           sudo apt-get install -y $PACKAGES
+          cd $GOPATH/src/wg-easy-vpn
+          pwd
+          ls -al
           make deps
       
       - name: Binaries
         env:
-          GOPATH: /home/runner/work/asiffer/go
+          GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
         run: |
+          cd $GOPATH/src/wg-easy-vpn
           make GOARCH=amd64
           make GOARCH=arm64
           make GOARCH=arm GOARM=7
     
       - name: Debian
         env:
-          GOPATH: /home/runner/work/asiffer/go
+          GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
         run: |
+          cd $GOPATH/src/wg-easy-vpn
           make debian GOARCH=amd64
           make debian GOARCH=arm64
           make debian GOARCH=arm GOARM=7
