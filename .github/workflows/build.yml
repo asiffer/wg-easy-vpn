@@ -31,37 +31,37 @@ jobs:
           pwd
           ls -al
         
-          
-      - name: Update 
+      - name: Install packages
+        use: mstksg/get-package@v1
+        with:
+          apt-get: $PACKAGES
+
+      - name: Get dependencies
         env:
           GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
         run: |
-          sudo apt-get update
-          sudo apt-get install -y $PACKAGES
-          cd $GOPATH/src/wg-easy-vpn
-          pwd
-          ls -al
           make deps
+        working-directory: $GOPATH/src/wg-easy-vpn
       
-      - name: Binaries
+      - name: Build binaries
         env:
           GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
         run: |
           pwd
           debhelper
-          cd $GOPATH/src/wg-easy-vpn
           make GOARCH=amd64
           make GOARCH=arm64
           make GOARCH=arm GOARM=7
+        working-directory: $GOPATH/src/wg-easy-vpn
     
-      - name: Debian
+      - name: Create debian packages
         env:
           GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
         run: |
-          cd $GOPATH/src/wg-easy-vpn
           make debian GOARCH=amd64
           make debian GOARCH=arm64
           make debian GOARCH=arm GOARM=7
+        working-directory: $GOPATH/src/wg-easy-vpn
 
     #   - name: Upload binaries
     #     uses: actions/upload-artifact@v1
