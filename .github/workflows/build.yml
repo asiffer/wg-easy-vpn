@@ -41,6 +41,9 @@ jobs:
         # env:
         #   GOPATH: $PATH
         run: |
+          pwd
+          ls -al
+          cd $GOPATH/src/wg-easy-vpn
           make deps
         working-directory: $GOPATH/src/wg-easy-vpn
       
