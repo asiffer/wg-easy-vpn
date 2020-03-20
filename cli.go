@@ -594,8 +594,8 @@ func cmdRm(c *cli.Context) error {
 	// }
 
 	// Read the VPN config
-	connPath := path.Join(RT.serverDir, RT.connName+DefaultConfigSuffix)
-	vpn, err := ReadVPN(connPath)
+	// connPath := path.Join(RT.serverDir, RT.connName+DefaultConfigSuffix)
+	// vpn, err := ReadVPN(connPath)
 
 	// if err != nil {
 	// 	return err

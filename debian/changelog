@@ -1,0 +1,5 @@
+wg-easy-vpn (1.0-1) unstable; urgency=medium
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- asr <asr@unknown>  Thu, 19 Mar 2020 09:57:20 +0100

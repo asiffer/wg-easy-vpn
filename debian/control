@@ -1,0 +1,15 @@
+Source: wg-easy-vpn
+Section: unknown
+Priority: optional
+Maintainer: asr <asr@unknown>
+Build-Depends: debhelper-compat (= 12)
+Standards-Version: 4.4.0
+Homepage: <insert the upstream URL, if relevant>
+#Vcs-Browser: https://salsa.debian.org/debian/wg-easy-vpn
+#Vcs-Git: https://salsa.debian.org/debian/wg-easy-vpn.git
+
+Package: wg-easy-vpn
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: A tool to ease WireGuard VPN setup
+ <insert long description, indented with spaces>

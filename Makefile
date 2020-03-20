@@ -9,6 +9,21 @@ GO          := $(shell command -v go)
 GO_VERSION  := $(shell $(GO) version)
 # Targeted arch
 GOARCH      := $(if $(GOARCH),$(GOARCH),$(shell $(GO) env GOARCH))
+GOARM       := 
+ARCH        := GOARCH=$(GOARCH)
+DPKG_ARCH   := $(GOARCH)
+
+# ARM 32 bits cases
+ifeq ($(GOARCH), arm)
+	GOARM     := $(if $(GOARM), $(GOARM), 7)
+	ARCH      := $(ARCH) GOARM=$(GOARM)
+	DPKG_ARCH := armhf
+	ifneq ($(GOARM), 7)
+		DPKG_ARCH := armel
+	endif
+endif
+
+
 # Binary name
 BIN		    := wg-easy-vpn
 # Installation directory
@@ -25,7 +40,7 @@ $(info Go compiler located at $(GO) ($(GO_VERSION)))
 
 build:
 	@echo -n "Building $(BIN)              "
-	@GOARCH=$(GOARCH) $(GO) build -o $(BIN) *.go
+	$(ARCH) $(GO) build -o $(BIN) *.go
 	@echo -e ${OK}
 
 install: build
@@ -50,7 +65,7 @@ cover:
 
 debian:
 	@echo "Creating debian package      "
-	@dpkg-buildpackage -b -us -uc
+	dpkg-buildpackage -a $(DPKG_ARCH) -b -us -uc
 	@echo -e ${OK}
 
 doc: 
