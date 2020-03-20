@@ -23,8 +23,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y $PACKAGES
-          sudo apt-get upgrade -y
-          sudo apt-get autoremove -y
+          go get -u ./...
       
       - name: Binaries
         run: |
