@@ -24,8 +24,8 @@ jobs:
           path: go/src/wg-easy-vpn
 
       - name: Debug
-        env:
-          GOPATH: $PATH
+        # env:
+        #   GOPATH: $PATH
         run: |
           env | grep GO
           go env
