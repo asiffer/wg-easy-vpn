@@ -24,7 +24,7 @@ jobs:
         with:
           apt-get: software-properties-common byacc flex dpkg-dev debhelper crossbuild-essential-armel crossbuild-essential-armhf crossbuild-essential-arm64
       
-      - name: Debug
+      - name: Get dependencies
         working-directory: go/src/wg-easy-vpn
         run: |
           env | grep GO
@@ -33,8 +33,21 @@ jobs:
           ls -al
           make deps
 
-      - run: make
+      - name: Build binaries
         working-directory: go/src/wg-easy-vpn
+        run: |
+          make GOARCH=amd64
+          make GOARCH=arm64
+          make GOARCH=arm GOARM=7
+        
+      - name: Create debian packages
+        working-directory: go/src/wg-easy-vpn
+        run: |
+          make debian GOARCH=amd64
+          make debian GOARCH=arm64
+          make debian GOARCH=arm GOARM=7
+        
+
       # - name: Set up Go 1.14.1
       #   uses: actions/setup-go@v1
       #   with:
