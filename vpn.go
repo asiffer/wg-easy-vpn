@@ -149,7 +149,7 @@ func (vpn *WGVPN) NumberOfPeers() int {
 // RemovePeerFromPublicKey does what it says
 func (vpn *WGVPN) RemovePeerFromPublicKey(k Key) error {
 	for i, p := range vpn.peers {
-		if k.Base64() == p.String() {
+		if k.Base64() == p.Public() {
 			vpn.peers = append(vpn.peers[:i], vpn.peers[i+1:]...)
 			return nil
 		}

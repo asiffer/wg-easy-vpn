@@ -38,6 +38,8 @@ $(info Go compiler located at $(GO) ($(GO_VERSION)))
 # Forced operations
 .PHONY: test clean install debian
 
+default: build
+
 deps:
 	@echo -n "Retrieving dependencies      "
 	@$(ARCH) $(GO) get -u ./...
@@ -45,7 +47,7 @@ deps:
 
 build:
 	@echo -n "Building $(BIN)              "
-	$(ARCH) $(GO) build -o $(BIN) *.go
+	@$(ARCH) $(GO) build -o $(BIN) *.go
 	@echo -e ${OK}
 
 install: build

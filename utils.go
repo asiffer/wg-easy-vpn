@@ -54,6 +54,7 @@ func getPublicKeyFromFile(p string) (string, error) {
 	return key.Public().Base64(), nil
 }
 
+// map clientName->Key
 func extractPairsFromFolder(folder string) map[string]string {
 	pairs := make(map[string]string)
 	files, err := ioutil.ReadDir(folder)
@@ -67,53 +68,31 @@ func extractPairsFromFolder(folder string) map[string]string {
 			// fmt.Println(path.Join(folder, f.Name()))
 			// fmt.Println(getPublicKeyFromFile(path.Join(folder, f.Name())))
 			if pk, err := getPublicKeyFromFile(path.Join(folder, f.Name())); err == nil {
-				pairs[pk] = name
+				pairs[name] = pk
 			}
 		}
 	}
 	return pairs
 }
 
-// func fatal(err error) {
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// }
+func getClientsFromFolder(folder string) []string {
+	c := make([]string, 0)
+	files, err := ioutil.ReadDir(folder)
+	if err != nil {
+		return nil
+	}
+	for _, f := range files {
+		name := strings.TrimSuffix(f.Name(), DefaultConfigSuffix)
+		if !f.IsDir() {
+			c = append(c, name)
+		}
+	}
+	return c
+}
 
 func isIPv4(ip net.IP) bool {
 	return ip.To4() != nil
 }
-
-// fullMask returns an IP address with a mask with all bits set to 1 (/32 or /128)
-// func fullMask(ip net.IP) net.IP {
-// 	var mask net.IPMask
-// 	if isIPv4(ip) {
-// 		mask = net.CIDRMask(IPv4Len, IPv4Len)
-// 	} else {
-// 		mask = net.CIDRMask(IPv6Len, IPv6Len)
-// 	}
-// 	return ip.Mask(mask)
-// }
-
-// func nullMask(ip net.IP) net.IP {
-// 	var mask net.IPMask
-// 	if isIPv4(ip) {
-// 		mask = net.CIDRMask(0, IPv4Len)
-// 	} else {
-// 		mask = net.CIDRMask(0, IPv6Len)
-// 	}
-// 	return ip.Mask(mask)
-// }
-
-// Return a 32 bytes (256 bits) random
-// pre-shared key (PSK)
-// func genPSK() []byte {
-// 	// init PSK
-// 	psk := make([]byte, PSKLen)
-// 	// fill it with random
-// 	rand.Read(psk)
-// 	return psk
-// }
 
 func printIPNet(ipnet *net.IPNet) string {
 	return ipnet.String()
@@ -127,21 +106,6 @@ func parseAddressAndMask(ipMask string) (*net.IPNet, error) {
 	return &net.IPNet{IP: ip, Mask: ipnet.Mask}, nil
 }
 
-// func fullMaskIPNet(ip *net.IPNet) *net.IPNet {
-// 	_, total := ip.Mask.Size()
-// 	return &net.IPNet{IP: ip.IP, Mask: net.CIDRMask(total, total)}
-// }
-
-// func maxLenKey(m map[string]string) int {
-// 	mlk := 0
-// 	for k := range m {
-// 		if len(k) > mlk {
-// 			mlk = len(k)
-// 		}
-// 	}
-// 	return mlk
-// }
-
 func incrementIP(ip net.IP) net.IP {
 	bytesIP := []byte(ip)
 	lastByte := int(bytesIP[len(bytesIP)-1])
@@ -151,30 +115,6 @@ func incrementIP(ip net.IP) net.IP {
 	bytesIP[len(bytesIP)-1] = byte(lastByte + 1)
 	return net.IP(bytesIP)
 }
-
-// it increments an array an create a copy
-// func incrementIPSlice(array []*net.IPNet) []*net.IPNet {
-// 	out := make([]*net.IPNet, len(array))
-// 	for i, n := range array {
-// 		out[i] = &net.IPNet{
-// 			IP:   incrementIP(n.IP),
-// 			Mask: n.Mask,
-// 		}
-// 	}
-// 	return out
-// }
-
-// create a copy
-// func copyIPSlice(array []*net.IPNet) []*net.IPNet {
-// 	out := make([]*net.IPNet, len(array))
-// 	for i, n := range array {
-// 		out[i] = &net.IPNet{
-// 			IP:   n.IP,
-// 			Mask: n.Mask,
-// 		}
-// 	}
-// 	return out
-// }
 
 // cleanString removes characters which are not allowed
 func cleanString(input string) string {
@@ -208,30 +148,6 @@ func mapIPList(l []net.IP) []string {
 	}
 	return out
 }
-
-// func mapIPNetStrList(l []string) ([]*net.IPNet, error) {
-// 	var ip net.IP
-// 	var err error
-// 	length := len(l)
-// 	out := make([]*net.IPNet, length)
-// 	for i := 0; i < length; i++ {
-// 		ip, out[i], err = net.ParseCIDR(l[i])
-// 		if err != nil {
-// 			return nil, fmt.Errorf("Error while parsing network %s (%w)", l[i], err)
-// 		}
-// 		out[i].IP = ip
-// 	}
-// 	return out, nil
-// }
-
-// func mapIPNetList(l []*net.IPNet) []string {
-// 	length := len(l)
-// 	out := make([]string, length)
-// 	for i := 0; i < length; i++ {
-// 		out[i] = l[i].String()
-// 	}
-// 	return out
-// }
 
 func fileExist(file string) bool {
 	_, err := os.Stat(file)

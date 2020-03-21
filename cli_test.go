@@ -226,7 +226,7 @@ func TestShow(t *testing.T) {
 	}
 	clientDir := path.Join(dir, "clients")
 
-	// _Reset()
+	_Reset()
 	cmdl := []string{
 		app.Name, "show",
 		"--server-dir", dir,
@@ -242,4 +242,32 @@ func TestShow(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
+}
+
+func TestRm(t *testing.T) {
+	title("Testing removing clients")
+
+	connName := "wgRM"
+
+	dir, err := createServerWithClients(connName, 3)
+	if err != nil {
+		t.Fatalf("Erorr while creating server (%v)", err)
+	}
+	clientDir := path.Join(dir, "clients")
+
+	_Reset()
+	cmdl := []string{
+		app.Name, "rm",
+		"--server-dir", dir,
+		"--client-dir", clientDir,
+		"-c", "client0", "-c", "client1",
+		connName,
+	}
+
+	if err := app.Run(cmdl); err != nil {
+		t.Errorf("%v", err)
+	}
+	if err := os.RemoveAll(dir); err != nil {
+		t.Errorf("%v", err)
+	}
 }

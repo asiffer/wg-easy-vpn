@@ -594,22 +594,61 @@ func cmdRm(c *cli.Context) error {
 	// }
 
 	// Read the VPN config
-	// connPath := path.Join(RT.serverDir, RT.connName+DefaultConfigSuffix)
-	// vpn, err := ReadVPN(connPath)
+	connPath := path.Join(RT.serverDir, RT.connName+DefaultConfigSuffix)
+	vpn, err := ReadVPN(connPath)
+	if err != nil {
+		return err
+	}
 
-	// if err != nil {
-	// 	return err
-	// }
+	publicKeyToRemove := make([]string, 0)
+	filesToRemove := make([]string, 0)
+	// savedClients := getClientsFromFolder(RT.clientDir)
 
-	// // extract key->client map from the client folder
-	// pairs := extractPairsFromFolder(c.String("client-dir"))
-	// for k, v := range pairs {
-	// 	// for
-	// 	// if k ==
-	// }
+	// extract client_name->key map from the client folder
+	pairs := extractPairsFromFolder(RT.clientDir)
 
-	// // retrieve public keys related to this connection
-	// // keys := vpn.PeerPublicKeys()
+	for _, c := range RT.clients.Value() {
+		if key, exists := pairs[c]; exists {
+			publicKeyToRemove = append(publicKeyToRemove, key)
+			// if !RT.keepFile {
+			filesToRemove = append(filesToRemove,
+				path.Join(RT.clientDir, c+DefaultConfigSuffix))
+			// }
+		} else {
+			// maybe a public key has been given
+			publicKeyToRemove = append(publicKeyToRemove, c)
+		}
+	}
 
-	return nil
+	for _, p := range vpn.peers {
+		fmt.Println(p.Public())
+	}
+
+	pk := NewKey()
+	for _, pkstr := range publicKeyToRemove {
+		if pk.UpdateFromBase64(pkstr) == nil {
+			// remove publickey
+			if vpn.RemovePeerFromPublicKey(pk) != nil {
+				yellowBold.Printf("The client with publicKey %s has not been found\n",
+					pk.Base64())
+			} else {
+				yellow.Printf("The client with public key %s has been removed from %s\n",
+					pk.Base64(), RT.connName)
+			}
+		} else {
+			yellowBold.Printf("The key %s is not valid", pkstr)
+		}
+	}
+
+	// remove client configuration files
+	if !RT.keepFile {
+		for _, f := range filesToRemove {
+			if err := os.Remove(f); err != nil {
+				return fmt.Errorf("Failed to remove %s (%v)", f, err)
+			}
+			yellow.Printf("The file %s has been removed\n", f)
+		}
+	}
+
+	return vpn.Save(connPath)
 }

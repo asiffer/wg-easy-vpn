@@ -33,12 +33,23 @@ jobs:
           ls -al
           make deps
 
-      - name: Build binaries
+      - name: Build (amd64)
         working-directory: go/src/wg-easy-vpn
         run: |
           make GOARCH=amd64
+          make debian GOARCH=amd64
+      
+      - name: Build (arm64)
+        working-directory: go/src/wg-easy-vpn
+        run: |
           make GOARCH=arm64
+          make debian GOARCH=arm64
+
+      - name: Build (armhf)
+        working-directory: go/src/wg-easy-vpn
+        run: |
           make GOARCH=arm GOARM=7
+          make debian GOARCH=arm GOARM=7
         
       - name: Create debian packages
         working-directory: go/src/wg-easy-vpn
@@ -46,63 +57,6 @@ jobs:
           make debian GOARCH=amd64
           make debian GOARCH=arm64
           make debian GOARCH=arm GOARM=7
-        
-
-      # - name: Set up Go 1.14.1
-      #   uses: actions/setup-go@v1
-      #   with:
-      #     go-version: 1.14.1
-      #   id: go
-
-      # - name: Check out code into the Go module directory
-      #   uses: actions/checkout@v2
-      #   with:
-      #     fetch-depth: 1
-      #     path: go/src/wg-easy-vpn
-
-      # - name: Debug
-      #   # env:
-      #   #   GOPATH: $PATH
-      #   run: |
-      #     env | grep GO
-      #     go env
-      #     pwd
-      #     ls -al
-        
-      # - name: Install packages
-      #   uses: mstksg/get-package@v1
-      #   with:
-      #     apt-get: $PACKAGES
-
-      # - name: Get dependencies
-      #   # env:
-      #   #   GOPATH: $PATH
-      #   run: |
-      #     pwd
-      #     ls -al
-      #     cd $GOPATH/src/wg-easy-vpn
-      #     make deps
-      #   working-directory: $GOPATH/src/wg-easy-vpn
-      
-      # - name: Build binaries
-      #   # env:
-      #   #   GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
-      #   run: |
-      #     pwd
-      #     debhelper
-      #     make GOARCH=amd64
-      #     make GOARCH=arm64
-      #     make GOARCH=arm GOARM=7
-      #   working-directory: $GOPATH/src/wg-easy-vpn
-    
-      # - name: Create debian packages
-      #   # env:
-      #     # GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
-      #   run: |
-      #     make debian GOARCH=amd64
-      #     make debian GOARCH=arm64
-      #     make debian GOARCH=arm GOARM=7
-      #   working-directory: $GOPATH/src/wg-easy-vpn
 
     #   - name: Upload binaries
     #     uses: actions/upload-artifact@v1

@@ -1,4 +1,7 @@
 # wg-easy-vpn
+
+![Build](https://github.com/asiffer/wg-easy-vpn/workflows/Build/badge.svg)
+
 A command-line tool to ease Wireguard VPN setup
 
 wg-easy-vpn is a tool designed to ease the set-up of a
@@ -15,7 +18,7 @@ for instance.
 Basically you download the binary from this repo:
 
 ```bash
-go install github.com/asiffer/wg-easy-vpn
+go get -u github.com/asiffer/wg-easy-vpn
 ```
 
 The advantage is that the tool is build according to your architecture. The drawback is
