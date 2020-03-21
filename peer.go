@@ -60,7 +60,7 @@ func (peer *WGPeer) Section(section *Section) {
 	section.Set("AllowedIPs", peer.AllowedIPs())
 	section.Set("PublicKey", peer.Public())
 	if peer.psk != nil {
-		section.Set("PSK", peer.PSK())
+		section.Set("PresharedKey", peer.PSK())
 	}
 }
 

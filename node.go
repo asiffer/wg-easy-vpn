@@ -81,7 +81,7 @@ func (node *WGNode) String() string {
 	s += fmt.Sprintf("Address = %s\n", node.Address())
 	s += fmt.Sprintf("PrivateKey = %s\n", node.Private())
 	if node.psk != nil {
-		s += fmt.Sprintf("PSK = %s\n", node.PSK())
+		s += fmt.Sprintf("PresharedKey = %s\n", node.PSK())
 	}
 	return s
 }
@@ -91,7 +91,7 @@ func (node *WGNode) Section(section *Section) {
 	section.Set("Address", node.Address())
 	section.Set("PrivateKey", node.Private())
 	if node.psk != nil {
-		section.Set("PSK", node.PSK())
+		section.Set("PresharedKey", node.PSK())
 	}
 }
 
