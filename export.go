@@ -26,7 +26,7 @@ const (
 	// file to export to QRCode
 	RawConfigMaxLength = 2048
 	// encoder = map[string]
-	standardBorder = 16
+	standardBorder = 4
 	//
 	standardWidth = 200
 )
@@ -99,11 +99,11 @@ func JPG(w io.Writer, b barcode.Barcode) error {
 
 // TXT encode an image through text
 func TXT(w io.Writer, b barcode.Barcode) error {
-	img, err := downScale(b)
+	b, err := downScale(b)
 	if err != nil {
 		return err
 	}
-	str := QRCodeToString(img)
+	str := QRCodeToString(standardImage(b))
 	_, err = w.Write([]byte(str))
 	return err
 }
@@ -121,16 +121,15 @@ func QRCodeToString(img image.Image) string {
 
 			if up == 0 {
 				if down == 0 {
-					output += "█"
+					output += " "
 				} else {
-					output += "▀"
-
+					output += "▄"
 				}
 			} else {
 				if down == 0 {
-					output += "▄"
+					output += "▀"
 				} else {
-					output += " "
+					output += "█"
 				}
 			}
 		}

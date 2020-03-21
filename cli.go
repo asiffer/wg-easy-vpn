@@ -393,7 +393,8 @@ func saveClient(name string,
 	peer := server.ToPeer(&ns, endpoint)
 	// add client PSK to server as peer
 	peer.psk = PresharedKey(client.psk)
-	// fmt.Printf("%v+\n", peer)
+
+	// Peer section
 	sec = f.AddSection("Peer")
 	peer.Section(sec)
 
