@@ -50,7 +50,7 @@ build:
 	@$(ARCH) $(GO) build -o $(BIN) *.go
 	@echo -e ${OK}
 
-install: build
+install:
 	@echo -n "Installing $(BIN) to $(INSTALL_DIR) "
 	@mkdir -p $(INSTALL_DIR)
 	@install $(BIN) $(INSTALL_DIR)

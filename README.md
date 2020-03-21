@@ -15,14 +15,23 @@ for instance.
 
 ### From sources
 
-Basically you download the binary from this repo:
+Basically you can download the sources from this repo. Either through `go get`:
 
 ```bash
 go get -u github.com/asiffer/wg-easy-vpn
+cd $GOPATH/src/github.com/asiffer/wg-easy-vpn
+go install
 ```
 
-The advantage is that the tool is build according to your architecture. The drawback is
-the need to have `Go` installed on your host.
+or through `git clone`:
+```bash
+git clone https://github.com/asiffer/wg-easy-vpn.git
+cd wg-easy-vpn 
+make
+sudo make install
+```
+
+The advantage is that the tool is build according to your architecture. The drawback is the need to have `Go` installed on your host.
 
 ### Debian package
 
@@ -34,8 +43,8 @@ to distribute `wg-easy-vpn` to various debian-like platforms.
 We suppose you have a server with a public address
 (reachable through the following domain name: wg.example.net), and you
 want to connect some clients to it. 
-By default server files will be located in `/etc/wireguard` and clients
-files will be located in `/etc/wireguard/clients`, therefore the following
+By default server files are located in `/etc/wireguard` and clients
+files are located in `/etc/wireguard/clients`, therefore the following
 commands are likely to be run as root.
 
 First, let us create the server (`wg0` is the name of the connection):
@@ -51,10 +60,45 @@ wg-easy-vpn add -c iphone -c myDesktop wg0
 ```
 
 Now you can transfer the clients' configuration files
-to the right locations. You can also add the `--qrcode-cli`
-option to print QR code to the cli (android app can take 
-this qr code as input).
+to the right locations. You can also add the `--export`
+flag to print QR code to the cli (android app can notably take 
+this QR code as input).
+
+Finally you can remove some clients:
+```bash
+wg-easy-vpn rm -c iphone wg0
+```
 
 ## Advanced usage
 
+### Custom server
+
+By default `wg-easy-vpn` makes the server listen on port 52820, but this 
+can be changed with the `--port` option:
+
+```bash
+wg-easy-vpn create --endpoint wg.example.net --port 10000 wg0
+```
+
+When you create a server, you can define a custom DNS (even several). This can be added to your configuration through the `--dns` option.
+
+```bash
+wg-easy-vpn create --endpoint wg.example.net --dns 1.1.1.1 wg0
+```
+
+The VPN created by `wg-easy-vpn` uses the network `192.168.0.0/24`. It can be modified with the `--net` option:
+
+```bash
+wg-easy-vpn create --endpoint wg.example.net --net 10.10.10.0/16 wg0
+```
+
+As previously said, the server configuration is saved to `/etc/wireguard` 
+(plus some metadata saved in the `.wg-easy-vpn` file). The parameter 
+`--server-dir` can be used to customize the location of these files.
+
+
 ## Issues
+
+Currently, this tool does not manage very well IP of clients when the number of 
+clients is high or when the specified mask size is greater that 24 (/30 may not
+be well supported for instance).
