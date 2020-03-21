@@ -13,21 +13,14 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/fatih/color"
 )
 
 func main() {
-	fmt.Println(os.Args)
 	// app is defined in cli.go
 	if err := app.Run(os.Args); err != nil {
 		color.Red("%v", err)
 	}
-
-	// if doc, err := app.ToMarkdown(); err == nil {
-	// 	fmt.Println(doc)
-	// }
-
 }

@@ -71,7 +71,7 @@ func initRuntime() {
 	RT.connName = DefaultConnectionName
 	RT.serverDir = DefaultServerConfigDirectory
 	RT.clientDir = DefaultClientConfigDirectory
-	RT.routes = cli.NewStringSlice()
+	RT.routes = cli.NewStringSlice("0.0.0.0/0", "::/0")
 	RT.networks = cli.NewStringSlice()
 	RT.noPSK = false
 	RT.force = false
@@ -183,10 +183,10 @@ func initApp() {
 						Destination: RT.clients,
 					},
 					&cli.StringSliceFlag{
-						Name:        "route",
-						Aliases:     []string{"r"},
-						Usage:       "Default routes managed by the VPN",
-						Value:       cli.NewStringSlice("0.0.0.0/0", "::/0"),
+						Name:    "route",
+						Aliases: []string{"r"},
+						Usage:   "Default routes managed by the VPN",
+						// Value:       cli.NewStringSlice("0.0.0.0/0", "::/0"),
 						Destination: RT.routes,
 					},
 					&cli.StringSliceFlag{
