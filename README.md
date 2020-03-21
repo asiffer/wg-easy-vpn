@@ -97,6 +97,26 @@ As previously said, the server configuration is saved to `/etc/wireguard`
 `--server-dir` can be used to customize the location of these files.
 
 
+### Custom clients
+
+By default `wg-easy-vpn` creates VPN where all the clients' trafic is 
+routed through (`0.0.0.0/0` and `::/0`). You can restrict theses routes:
+
+```bash
+wg-easy-vpn add -c newDevice --route "10.0.0.0/8" wg0
+```
+
+You can export clients config through QR code with the `--export` flag.
+In this case the QR code is printed to the terminal but you can saved it
+to an image file instead by setting `--export-format` (`jpg`, `png` and `txt` are recognized). The image file is saved to the clients directory.
+
+```bash
+wg-easy-vpn add -c newDevice --export --export-format png wg0
+```
+
+The client configuration is saved to `/etc/wireguard/clients` by default 
+The parameter `--client-dir` can be used to customize the location of these files.
+
 ## Issues
 
 Currently, this tool does not manage very well IP of clients when the number of 
