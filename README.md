@@ -15,20 +15,12 @@ for instance.
 
 ### From sources
 
-Basically you can download the sources from this repo. Either through `go get`:
+Basically you can download the sources from this repo and install it with
+`go` tools:
 
 ```bash
 go get -u github.com/asiffer/wg-easy-vpn
-cd $GOPATH/src/github.com/asiffer/wg-easy-vpn
-go install
-```
-
-or through `git clone`:
-```bash
-git clone https://github.com/asiffer/wg-easy-vpn.git
-cd wg-easy-vpn 
-make
-sudo make install
+go install github.com/asiffer/wg-easy-vpn
 ```
 
 The advantage is that the tool is build according to your architecture. The drawback is the need to have `Go` installed on your host.
