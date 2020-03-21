@@ -90,9 +90,9 @@ func (node *WGNode) String() string {
 func (node *WGNode) Section(section *Section) {
 	section.Set("Address", node.Address())
 	section.Set("PrivateKey", node.Private())
-	if node.psk != nil {
-		section.Set("PresharedKey", node.PSK())
-	}
+	// if node.psk != nil {
+	// 	section.Set("PresharedKey", node.PSK())
+	// }
 }
 
 // DNS returns the DNS address that client should use
@@ -126,16 +126,17 @@ func (node *WGNode) ToPeer() *WGPeer {
 
 // ToPeer turns a WGServer into a Peer.
 // routes is the destinations which will pass through the vpn
-// dnsname is the public address of teh server
+// dnsname is the public address of the server
 func (server *WGServer) ToPeer(routes *NetSlice, endpoint string) *WGServerAsPeer {
+	fmt.Println(server.psk)
 	peer := server.WGNode.ToPeer()
+	fmt.Println(peer.psk)
 	if routes != nil {
 		peer.allowedIPs = routes
 	} else {
 		n := NewNetSlice()
 		n.Append(&IPv4ZeroNet)
 		n.Append(&IPv6ZeroNet)
-		// peer.allowedIPs = []*net.IPNet{&IPv4ZeroNet, &IPv6ZeroNet}
 		peer.allowedIPs = &n
 	}
 	return &WGServerAsPeer{

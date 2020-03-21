@@ -50,7 +50,7 @@ func (peer *WGPeer) String() string {
 	s += fmt.Sprintf("PublicKey = %s\n", peer.Public())
 	s += fmt.Sprintf("AllowedIPs = %s\n", peer.AllowedIPs())
 	if peer.psk != nil {
-		s += fmt.Sprintf("PSK = %s\n", peer.PSK())
+		s += fmt.Sprintf("PresharedKey = %s\n", peer.PSK())
 	}
 	return s
 }
