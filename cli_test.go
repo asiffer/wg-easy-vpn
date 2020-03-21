@@ -181,7 +181,7 @@ func TestAdd(t *testing.T) {
 		"--client", "client0",
 		"--client", "client1",
 		"--client", "client2",
-		"--qrcode", "txt",
+		"--export",
 		connName,
 	}
 

@@ -44,7 +44,7 @@ func getPublicKeyFromFile(p string) (string, error) {
 
 	sec, err := file.GetSection("Interface")
 	if err != nil {
-		return "", fmt.Errorf("Error while getting Interface section from %s (%v)", file, err)
+		return "", fmt.Errorf("Error while getting Interface section from %s (%v)", p, err)
 	}
 
 	key, err := sec.GetKeyFromBase64("PrivateKey")
@@ -75,28 +75,28 @@ func extractPairsFromFolder(folder string) map[string]string {
 	return pairs
 }
 
-func getClientsFromFolder(folder string) []string {
-	c := make([]string, 0)
-	files, err := ioutil.ReadDir(folder)
-	if err != nil {
-		return nil
-	}
-	for _, f := range files {
-		name := strings.TrimSuffix(f.Name(), DefaultConfigSuffix)
-		if !f.IsDir() {
-			c = append(c, name)
-		}
-	}
-	return c
-}
+// func getClientsFromFolder(folder string) []string {
+// 	c := make([]string, 0)
+// 	files, err := ioutil.ReadDir(folder)
+// 	if err != nil {
+// 		return nil
+// 	}
+// 	for _, f := range files {
+// 		name := strings.TrimSuffix(f.Name(), DefaultConfigSuffix)
+// 		if !f.IsDir() {
+// 			c = append(c, name)
+// 		}
+// 	}
+// 	return c
+// }
 
-func isIPv4(ip net.IP) bool {
-	return ip.To4() != nil
-}
+// func isIPv4(ip net.IP) bool {
+// 	return ip.To4() != nil
+// }
 
-func printIPNet(ipnet *net.IPNet) string {
-	return ipnet.String()
-}
+// func printIPNet(ipnet *net.IPNet) string {
+// 	return ipnet.String()
+// }
 
 func parseAddressAndMask(ipMask string) (*net.IPNet, error) {
 	ip, ipnet, err := net.ParseCIDR(ipMask)

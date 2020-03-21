@@ -17,12 +17,18 @@ var (
 	pngBaseQrCode  string
 	pngTruthQrCode string
 	pngTestQrCode  string
+	jpgBaseQrCode  string
+	jpgTruthQrCode string
+	jpgTestQrCode  string
 )
 
 func Test0(t *testing.T) {
 	pngBaseQrCode = path.Join(testpath, "hello_world0.png")
 	pngTruthQrCode = path.Join(testpath, "hello_world1.png")
 	pngTestQrCode = path.Join(testpath, "hello_world2.png")
+	jpgBaseQrCode = path.Join(testpath, "hello_world0.jpg")
+	jpgTruthQrCode = path.Join(testpath, "hello_world1.jpg")
+	jpgTestQrCode = path.Join(testpath, "hello_world2.jpg")
 }
 
 // func Test0(t *testing.T) {
@@ -74,4 +80,15 @@ func TestPlainTextQRCode(t *testing.T) {
 	msg := "Hello World!"
 	reader := bytes.NewReader([]byte(msg))
 	ExportConfig(reader, os.Stdout)
+}
+
+func TestJPGQRCode(t *testing.T) {
+	title("Exporting to QRCode (JPG)")
+	msg := "Hello World!"
+	reader := bytes.NewReader([]byte(msg))
+	out, err := os.Create(jpgTestQrCode)
+	if err != nil {
+		t.Errorf("Error while opening PNG test file (%w)", err)
+	}
+	ExportConfig(reader, out)
 }

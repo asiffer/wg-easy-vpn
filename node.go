@@ -6,7 +6,6 @@ package main
 import (
 	"fmt"
 	"net"
-	"strings"
 )
 
 // WGNode defines a Wireguard node (client or server)
@@ -57,9 +56,9 @@ func NewWGClient(ipnet *NetSlice, withPSK bool, dns []net.IP) *WGClient {
 }
 
 // Public returns the public key of the node (base64 encoded string)
-func (node *WGNode) Public() string {
-	return node.private.Public().Base64()
-}
+// func (node *WGNode) Public() string {
+// 	return node.private.Public().Base64()
+// }
 
 // Private returns the private key of the node (base64 encoded string)
 func (node *WGNode) Private() string {
@@ -76,16 +75,6 @@ func (node *WGNode) Address() string {
 	// return strings.Join(mapIPNetList(node.address), ", ")
 	return node.address.String()
 }
-
-// AddressWithMask returns the node address with the subnetwork mask
-// func (node *WGNode) AddressWithMask(size int) string {
-// 	_, total := node.address.DefaultMask().Size()
-// 	network := net.IPNet{
-// 		IP:   node.address,
-// 		Mask: net.CIDRMask(size, total),
-// 	}
-// 	return network.String()
-// }
 
 func (node *WGNode) String() string {
 	s := ""
@@ -107,14 +96,14 @@ func (node *WGNode) Section(section *Section) {
 }
 
 // DNS returns the DNS address that client should use
-func (client *WGClient) DNS() string {
-	nDNS := len(client.dns)
-	strDNS := make([]string, nDNS)
-	for i := 0; i < nDNS; i++ {
-		strDNS[i] = client.dns[i].String()
-	}
-	return strings.Join(strDNS, ", ")
-}
+// func (client *WGClient) DNS() string {
+// 	nDNS := len(client.dns)
+// 	strDNS := make([]string, nDNS)
+// 	for i := 0; i < nDNS; i++ {
+// 		strDNS[i] = client.dns[i].String()
+// 	}
+// 	return strings.Join(strDNS, ", ")
+// }
 
 // ToPeer turns a Node into a Peer
 func (node *WGNode) ToPeer() *WGPeer {

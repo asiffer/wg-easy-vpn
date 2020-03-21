@@ -47,20 +47,20 @@ var (
 
 // Runtime variables (set from cli.Context)
 type Runtime struct {
-	connName  string
-	serverDir string
-	clientDir string
-	routes    *cli.StringSlice
-	networks  *cli.StringSlice
-	noPSK     bool
-	force     bool
-	port      int
-	endpoint  string
-	dns       *cli.StringSlice
-	clients   *cli.StringSlice
-	qrcode    string
-	qrcodeCli bool
-	keepFile  bool
+	connName     string
+	serverDir    string
+	clientDir    string
+	routes       *cli.StringSlice
+	networks     *cli.StringSlice
+	noPSK        bool
+	force        bool
+	port         int
+	endpoint     string
+	dns          *cli.StringSlice
+	clients      *cli.StringSlice
+	exportFormat string
+	export       bool
+	keepFile     bool
 }
 
 // RT is the global runtime of wg-easy-vpn. It gathers the default config
@@ -79,8 +79,8 @@ func initRuntime() {
 	RT.endpoint = ""
 	RT.dns = cli.NewStringSlice()
 	RT.clients = cli.NewStringSlice()
-	RT.qrcode = DefaultQRCodeFormat
-	RT.qrcodeCli = false
+	RT.exportFormat = ""
+	RT.export = false
 	RT.keepFile = false
 }
 
@@ -201,19 +201,20 @@ func initApp() {
 						Required:    false,
 						Destination: &RT.force,
 					},
-					&cli.StringFlag{
-						Name:        "qrcode",
-						Aliases:     []string{"q"},
+					&cli.BoolFlag{
+						Name:        "export",
+						Aliases:     []string{"e"},
 						Usage:       "export the config to an image (png or jpg) through a qrcode",
 						Required:    false,
-						Destination: &RT.qrcode,
+						Value:       false,
+						Destination: &RT.export,
 					},
-					&cli.BoolFlag{
-						Name:        "qrcode-cli",
-						Aliases:     []string{"i"},
-						Usage:       "export the config through a qrcode on the terminal",
+					&cli.StringFlag{
+						Name:        "export-format",
+						Aliases:     []string{"t"},
+						Usage:       "define the format of the exported qrcode (txt, jpg or png). If this flag is not set, the qrcode is printed to stdout",
 						Required:    false,
-						Destination: &RT.qrcodeCli,
+						Destination: &RT.exportFormat,
 					},
 				},
 			},
@@ -460,21 +461,27 @@ func exportClientConfig(clientName string) error {
 	}
 	// outfile
 	var w *os.File
-	if RT.qrcodeCli {
-		w = os.Stdout
-	} else {
-		file = strings.Replace(file, DefaultConfigSuffix, "."+RT.qrcode, 1)
+	switch strings.ToLower(RT.exportFormat) {
+	case "png", "jpg", "txt":
+		file = strings.Replace(file, DefaultConfigSuffix, "."+RT.exportFormat, 1)
 		w, err = os.Create(file)
 		if err != nil {
 			return fmt.Errorf("Error while creating output file %s (%v)", file, err)
 		}
+		break
+	default:
+		w = os.Stdout
+		break
 	}
 
 	if err := ExportConfig(r, w); err != nil {
 		return fmt.Errorf("Error while exporting qrcode (%v)", err)
 	}
 	r.Close()
-	w.Close()
+
+	if w != os.Stdout {
+		w.Close()
+	}
 
 	// changing permissions
 	if os.Chmod(file, 0600); err != nil {
@@ -511,25 +518,19 @@ func cmdAdd(c *cli.Context) error {
 		}
 	}
 
-	// alias of qrcode
-	if RT.qrcodeCli {
-		RT.qrcode = "txt"
-	}
-
 	// now we are ready to create clients
 	clients := make([]*WGClient, len(RT.clients.Value()))
 	for i, clientName := range RT.clients.Value() {
 		// create client
 		clients[i] = NewWGClient(baseIP, !c.Bool("no-psk"), vpn.metadata.dns)
 		// save client config
-		err := saveClient(clientName, vpn.server, clients[i], vpn.metadata.endpoint)
-		if err != nil {
+		if err := saveClient(clientName, vpn.server, clients[i], vpn.metadata.endpoint); err != nil {
 			return fmt.Errorf("Error while saving client '%s': %v", clientName, err)
 		}
 		green.Printf("Client %s has been added (%s)\n",
 			clientName, path.Join(c.Path("client-dir"), clientName+DefaultConfigSuffix))
 		// qrcode ?
-		if c.IsSet("qrcode") {
+		if RT.export {
 			if err := exportClientConfig(clientName); err != nil {
 				return err
 			}

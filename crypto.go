@@ -89,10 +89,10 @@ func (key Key) UpdateFromBase64(s string) error {
 	return key.UpdateFromBytes(raw)
 }
 
-func curve25519KeyPair() (Key, Key) {
-	private := NewRandomKey()
-	return private.Public(), private
-}
+// func curve25519KeyPair() (Key, Key) {
+// 	private := NewRandomKey()
+// 	return private.Public(), private
+// }
 
 // Base64 encodes a key
 func (key Key) Base64() string {
@@ -114,14 +114,14 @@ func (psk PresharedKey) Base64() string {
 }
 
 // IsNull check if the PSK is full of zeros
-func (psk PresharedKey) IsNull() bool {
-	for i := 0; i < PSKLen; i++ {
-		if psk[i] != 0 {
-			return false
-		}
-	}
-	return true
-}
+// func (psk PresharedKey) IsNull() bool {
+// 	for i := 0; i < PSKLen; i++ {
+// 		if psk[i] != 0 {
+// 			return false
+// 		}
+// 	}
+// 	return true
+// }
 
 // UpdateFromBytes update a PSK from a given slice
 func (psk PresharedKey) UpdateFromBytes(slice []byte) error {
