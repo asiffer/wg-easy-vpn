@@ -27,7 +27,7 @@ func TestNodeString(t *testing.T) {
 		t.Errorf("Error while parsing netslice %s (%v)", ns, err)
 	}
 	node := NewWGNode(&slice, true)
-	truth := fmt.Sprintf("Address = %s\nPrivateKey = %s\nPSK = %s\n",
+	truth := fmt.Sprintf("Address = %s\nPrivateKey = %s\nPresharedKey = %s\n",
 		node.Address(), node.Private(), node.PSK())
 	if node.String() != truth {
 		t.Errorf("Expected %s, got %s", truth, node.String())

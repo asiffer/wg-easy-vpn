@@ -128,9 +128,7 @@ func (node *WGNode) ToPeer() *WGPeer {
 // routes is the destinations which will pass through the vpn
 // dnsname is the public address of the server
 func (server *WGServer) ToPeer(routes *NetSlice, endpoint string) *WGServerAsPeer {
-	fmt.Println(server.psk)
 	peer := server.WGNode.ToPeer()
-	fmt.Println(peer.psk)
 	if routes != nil {
 		peer.allowedIPs = routes
 	} else {

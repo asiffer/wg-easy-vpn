@@ -88,10 +88,9 @@ func initApp() {
 	app = &cli.App{
 		Name:                   "wg-easy-vpn",
 		ArgsUsage:              "[wg connection]",
-		Version:                "1.0",
+		Version:                "1.0b",
 		Authors:                []*cli.Author{&cli.Author{Name: "asr"}},
 		Copyright:              "GPLv3",
-		Before:                 setConnectionName,
 		EnableBashCompletion:   true,
 		UseShortOptionHandling: true,
 		Action:                 func(c *cli.Context) error { return nil },
@@ -100,6 +99,7 @@ func initApp() {
 				Name:      "create",
 				Usage:     "create a new Wireguard VPN from scratch",
 				Action:    cmdCreate,
+				Before:    setConnectionName,
 				ArgsUsage: "[wg connection]",
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
@@ -157,6 +157,7 @@ func initApp() {
 				Usage:     "Add a new client to the VPN",
 				ArgsUsage: "[wg connection]",
 				Action:    cmdAdd,
+				Before:    setConnectionName,
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
 						Name:        "no-psk",
@@ -223,6 +224,7 @@ func initApp() {
 				Usage:     "Show the clients of the VPN",
 				ArgsUsage: "[wg connection]",
 				Action:    cmdShow,
+				Before:    setConnectionName,
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:        "server-dir",
@@ -247,6 +249,7 @@ func initApp() {
 				Name:      "rm",
 				Usage:     "Remove a client from the VPN",
 				Action:    cmdRm,
+				Before:    setConnectionName,
 				ArgsUsage: "[wg connection]",
 				Flags: []cli.Flag{
 					&cli.StringSliceFlag{
@@ -303,10 +306,11 @@ func init() {
 
 func setConnectionName(c *cli.Context) error {
 	args := c.Args()
-	if c.NArg() > 0 {
-		last := args.Get(args.Len() - 1)
-		RT.connName = cleanString(last)
+	if c.NArg() == 0 {
+		return fmt.Errorf("The name of the connection is not given")
 	}
+	last := args.Get(args.Len() - 1)
+	RT.connName = cleanString(last)
 	return nil
 }
 
@@ -405,6 +409,7 @@ func saveClient(name string,
 func cmdCreate(c *cli.Context) error {
 	// Server ---
 	var err error
+	fmt.Println(c.Args())
 
 	// Get networks
 	nets := NewNetSlice()
@@ -445,11 +450,15 @@ func cmdCreate(c *cli.Context) error {
 	if err := saveServer(server); err != nil {
 		return fmt.Errorf("Error while saving server configuration: %v", err)
 	}
+	green.Printf("The connection %s has been set up (%s)\n",
+		RT.connName, path.Join(RT.serverDir, RT.connName+DefaultConfigSuffix))
 
 	// save metadata
 	if err := saveMetadata(RT.connName, &meta); err != nil {
 		return fmt.Errorf("Error while saving connection metadata: %v", err)
 	}
+	green.Printf("Metadata about the connection %s has been saved to %s\n",
+		RT.connName, path.Join(RT.serverDir, DefaultMetadataFile))
 
 	return nil
 }
@@ -530,8 +539,11 @@ func cmdAdd(c *cli.Context) error {
 		if err := saveClient(clientName, vpn.server, clients[i], vpn.metadata.endpoint); err != nil {
 			return fmt.Errorf("Error while saving client '%s': %v", clientName, err)
 		}
-		green.Printf("Client %s has been added (%s)\n",
-			clientName, path.Join(c.Path("client-dir"), clientName+DefaultConfigSuffix))
+		green.Printf("Client %s has been added (%s) to %s\n",
+			clientName,
+			path.Join(RT.clientDir, clientName+DefaultConfigSuffix),
+			RT.connName,
+		)
 		// qrcode ?
 		if RT.export {
 			if err := exportClientConfig(clientName); err != nil {

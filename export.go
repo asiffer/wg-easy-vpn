@@ -25,10 +25,9 @@ const (
 	// RawConfigMaxLength is the maximum length (in bytes) of a config
 	// file to export to QRCode
 	RawConfigMaxLength = 2048
-	// encoder = map[string]
-	standardBorder = 4
-	//
-	standardWidth = 200
+	standardWidth      = 200
+	standardBorder     = 16
+	terminalBorder     = 4
 )
 
 var (
@@ -103,7 +102,15 @@ func TXT(w io.Writer, b barcode.Barcode) error {
 	if err != nil {
 		return err
 	}
-	str := QRCodeToString(standardImage(b))
+
+	var img image.Image
+	if w == os.Stdout {
+		img = addBorder(to16bitsGrayScale(b), terminalBorder)
+	} else {
+		img = standardImage(b)
+	}
+
+	str := QRCodeToString(img)
 	_, err = w.Write([]byte(str))
 	return err
 }
