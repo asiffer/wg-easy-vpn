@@ -1,35 +1,11 @@
 name: Build
 on:
   repository_dispatch:
-    types: update
+    types: update-build
 
 jobs:
-  test:
-    name: Test and coverage
-    env:
-      GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-        with:
-          fetch-depth: 1
-          path: go/src/wg-easy-vpn
-
-      - uses: actions/setup-go@v1
-        with:
-          go-version: '1.14.1'
-
-      - name: Run Unit tests.
-        run: make cover
-        working-directory: go/src/wg-easy-vpn
-      
-      - name: Upload Coverage report to CodeCov
-        uses: codecov/codecov-action@v1.0.0
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: go/src/wg-easy-vpn/coverage.txt
   build:
-    name: Build all
+    name: Build
     env:
       GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
     runs-on: ubuntu-latest
@@ -56,24 +32,6 @@ jobs:
           pwd
           ls -al
           make deps
-
-      # - name: Build (amd64)
-      #   working-directory: go/src/wg-easy-vpn
-      #   run: |
-      #     make GOARCH=amd64
-      #     make debian GOARCH=amd64
-      
-      # - name: Build (arm64)
-      #   working-directory: go/src/wg-easy-vpn
-      #   run: |
-      #     make GOARCH=arm64
-      #     make debian GOARCH=arm64
-
-      # - name: Build (armhf)
-      #   working-directory: go/src/wg-easy-vpn
-      #   run: |
-      #     make GOARCH=arm GOARM=7
-      #     make debian GOARCH=arm GOARM=7
 
       - name: Build binaries
         working-directory: go/src/wg-easy-vpn
