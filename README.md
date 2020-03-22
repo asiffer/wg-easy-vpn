@@ -29,10 +29,22 @@ go install github.com/asiffer/wg-easy-vpn
 
 The advantage is that the tool is build according to your architecture. The drawback is the need to have `Go` installed on your host.
 
+### Binaries
+
+If you don't have a `Go` compiler, you can directly download the final binary.
+
+[![badge](https://img.shields.io/badge/bin-amd64-00ADD8?style=flat-square&logo=go)](https://github.com/asiffer/wg-easy-vpn/releases/download/1.0a/wg-easy-vpn-amd64)
+[![badge](https://img.shields.io/badge/bin-arm64-00ADD8?style=flat-square&logo=go)](https://github.com/asiffer/wg-easy-vpn/releases/download/1.0a/wg-easy-vpn-arm64)
+[![badge](https://img.shields.io/badge/bin-armhf-00ADD8?style=flat-square&logo=go)](https://github.com/asiffer/wg-easy-vpn/releases/download/1.0a/wg-easy-vpn-armhf)
+
 ### Debian package
 
-Debian packages will be soon available for different architectures
+Debian packages are also available for different architectures
 to distribute `wg-easy-vpn` to various debian-like platforms.
+
+[![badge](https://img.shields.io/badge/debian-amd64-A81D33?style=flat-square&logo=debian)](https://github.com/asiffer/wg-easy-vpn/releases/download/1.0a/wg-easy-vpn_1.0a_amd64.deb)
+[![badge](https://img.shields.io/badge/debian-arm64-A81D33?style=flat-square&logo=debian)](https://github.com/asiffer/wg-easy-vpn/releases/download/1.0a/wg-easy-vpn_1.0a_arm64.deb)
+[![badge](https://img.shields.io/badge/debian-armhf-A81D33?style=flat-square&logo=debian)](https://github.com/asiffer/wg-easy-vpn/releases/download/1.0a/wg-easy-vpn_1.0a_armhf.deb)
 
 ## Usage
 
