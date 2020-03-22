@@ -73,7 +73,7 @@ test:
 
 cover:
 	@echo -n "Code coverage: "
-	@GOARCH=$(GOARCH) $(GO) test -cover . | awk -F ' ' '{printf "%.1f%% ",$$5}'
+	@GOARCH=$(GOARCH) $(GO) test -cover -coverprofile coverage.txt . | awk -F ' ' '{printf "%.1f%% ",$$5}'
 	@echo -e ${OK}
 
 debian:
