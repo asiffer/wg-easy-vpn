@@ -130,3 +130,5 @@ The parameter `--client-dir` can be used to customize the location of these file
 Currently, this tool does not manage very well IP of clients when the number of 
 clients is high or when the specified mask size is greater that 24 (/30 may not
 be well supported for instance).
+
+Moreover, the IP (re-)assignement is likely to fail after a client has been removed. I will try to fix it firstly.
