@@ -26,6 +26,10 @@ endif
 
 # Binary name
 BIN		    := wg-easy-vpn
+# Binary directory (where binaries are copied)
+BIN_DIR     := ./bin
+# Where the debian packages are stored
+DIST_DIR    := ./dist
 # Installation directory
 INSTALL_DIR := $(DESTDIR)/usr/bin
 # Fancyness
@@ -48,6 +52,8 @@ deps:
 build:
 	@echo -n "Building $(BIN)              "
 	@$(ARCH) $(GO) build -o $(BIN) *.go
+	@mkdir -p $(BIN_DIR)/$(DPKG_ARCH)
+	@cp $(BIN) $(BIN_DIR)/$(DPKG_ARCH)
 	@echo -e ${OK}
 
 install:
@@ -72,7 +78,9 @@ cover:
 
 debian:
 	@echo "Creating debian package      "
-	dpkg-buildpackage -a $(DPKG_ARCH) -b -us -uc
+	@dpkg-buildpackage -a $(DPKG_ARCH) -b -us -uc
+	@mkdir -p dist/
+	@mv ../wg-easy-vpn_*.deb dist/
 	@echo -e ${OK}
 
 doc: 

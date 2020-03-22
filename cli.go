@@ -88,7 +88,7 @@ func initApp() {
 	app = &cli.App{
 		Name:                   "wg-easy-vpn",
 		ArgsUsage:              "[wg connection]",
-		Version:                "1.0b",
+		Version:                "1.0a",
 		Authors:                []*cli.Author{&cli.Author{Name: "asr"}},
 		Copyright:              "GPLv3",
 		EnableBashCompletion:   true,

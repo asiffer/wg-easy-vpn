@@ -17,7 +17,7 @@ jobs:
 
       - uses: actions/setup-go@v1
         with:
-          go-version: '1.14.1' # The Go version to download (if necessary) and use.
+          go-version: '1.14.1'
       
       - name: Install packages
         uses: mstksg/get-package@v1
@@ -33,23 +33,30 @@ jobs:
           ls -al
           make deps
 
-      - name: Build (amd64)
+      # - name: Build (amd64)
+      #   working-directory: go/src/wg-easy-vpn
+      #   run: |
+      #     make GOARCH=amd64
+      #     make debian GOARCH=amd64
+      
+      # - name: Build (arm64)
+      #   working-directory: go/src/wg-easy-vpn
+      #   run: |
+      #     make GOARCH=arm64
+      #     make debian GOARCH=arm64
+
+      # - name: Build (armhf)
+      #   working-directory: go/src/wg-easy-vpn
+      #   run: |
+      #     make GOARCH=arm GOARM=7
+      #     make debian GOARCH=arm GOARM=7
+
+      - name: Build binaries
         working-directory: go/src/wg-easy-vpn
         run: |
           make GOARCH=amd64
-          make debian GOARCH=amd64
-      
-      - name: Build (arm64)
-        working-directory: go/src/wg-easy-vpn
-        run: |
           make GOARCH=arm64
-          make debian GOARCH=arm64
-
-      - name: Build (armhf)
-        working-directory: go/src/wg-easy-vpn
-        run: |
           make GOARCH=arm GOARM=7
-          make debian GOARCH=arm GOARM=7
         
       - name: Create debian packages
         working-directory: go/src/wg-easy-vpn
@@ -58,15 +65,14 @@ jobs:
           make debian GOARCH=arm64
           make debian GOARCH=arm GOARM=7
 
-    #   - name: Upload binaries
-    #     uses: actions/upload-artifact@v1
-    #     with:
-    #       name: netspot
-    #       path: bin/
-
-
-    #   - name: Upload debian package
-    #     uses: actions/upload-artifact@v1
-    #     with:
-    #       name: netspot-debian-amd64
-    #       path: dist/debian/
+      - name: Upload binaries
+        uses: actions/upload-artifact@v1
+        with:
+          name: wg-easy-vpn-bin
+          path: go/src/wg-easy-vpn/bin/
+      
+      - name: Upload debian packages
+        uses: actions/upload-artifact@v1
+        with:
+          name: wg-easy-vpn-deb
+          path: go/src/wg-easy-vpn/dist/
