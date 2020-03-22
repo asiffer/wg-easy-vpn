@@ -2,7 +2,7 @@
 
 ![Build](https://github.com/asiffer/wg-easy-vpn/workflows/Build/badge.svg)
 ![Test](https://github.com/asiffer/wg-easy-vpn/workflows/Test/badge.svg)
-[![codecov](https://codecov.io/gh/asiffer/wg-easy-vpn/branch/master/graph/badge.svg)](https://codecov.io/gh/asiffer/wg-easy-vpn)
+[![Coverage](https://codecov.io/gh/asiffer/wg-easy-vpn/branch/master/graph/badge.svg)](https://codecov.io/gh/asiffer/wg-easy-vpn)
 
 
 
