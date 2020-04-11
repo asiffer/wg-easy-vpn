@@ -64,7 +64,7 @@ install:
 
 test:
 	@echo -n "Testing $(BIN)               "
-	@r=$$(GOARCH=$(GOARCH) $(GO) test -v); \
+	@r="$(shell GOARCH=$(GOARCH) $(GO) test -v | tail -n1)"; \
 		if (("$${r:0:2}" == "ok")); then \
 			echo -e ${OK}; \
 		else \
