@@ -201,7 +201,9 @@ func TestAdd(t *testing.T) {
 	base := *vpn.server.address.Copy()
 	for _, peer := range vpn.peers {
 		base.Increment()
+		fmt.Println(peer.String())
 		for i, a := range *peer.allowedIPs {
+
 			if !a.IP.Equal(base[i].IP) {
 				t.Errorf("Expected %s, got %s", base.String(), peer.allowedIPs.String())
 			}

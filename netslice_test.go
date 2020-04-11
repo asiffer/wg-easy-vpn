@@ -40,6 +40,31 @@ func TestNewNetSliceFromString(t *testing.T) {
 	}
 }
 
+func TestIterate(t *testing.T) {
+	network := &net.IPNet{
+		IP:   net.IPv4(192, 168, 3, 10),
+		Mask: net.CIDRMask(17, 32),
+	}
+
+	flow, _ := Iterate(network)
+	for {
+		ip, ok := <-flow
+		if !ok {
+			break
+		}
+		if !network.Contains(ip) {
+			t.Errorf("The network %s does not contain %s", network.String(), ip.String())
+		}
+	}
+
+	// early stop
+	flow, stop := Iterate(network)
+	for i := 0; i < 10; i++ {
+		<-flow
+	}
+	stop <- true
+}
+
 // Append adds a new element in the slice
 // func (ns NetSlice) Append(n *net.IPNet) {
 // 	ns = append(ns, n)

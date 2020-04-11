@@ -82,3 +82,16 @@ func TestParseAddressAndMask(t *testing.T) {
 		}
 	}
 }
+
+func TestCopyIP(t *testing.T) {
+	ip := net.IPv4(10, 9, 8, 7)
+	tmp := copyIP(ip)
+	if !ip.Equal(tmp) {
+		t.Errorf("Bad copy, expected %s, got %s", ip.String(), tmp.String())
+	}
+	// modify last byte
+	tmp[len(tmp)-1]++
+	if ip.Equal(tmp) {
+		t.Errorf("Bad copy, expected different addresses, got %s and %s", ip.String(), tmp.String())
+	}
+}

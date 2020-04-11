@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"path"
 	"strings"
 )
@@ -178,4 +179,59 @@ func (vpn *WGVPN) PeerPublicKeys() []string {
 		keys[i] = p.Public()
 	}
 	return keys
+}
+
+// ReservedIPs return a list of all the IP already reserved in
+// the VPN
+func (vpn *WGVPN) ReservedIPs() []net.IP {
+	reserved := make([]net.IP, 0)
+	// loop over the server addresses
+	for _, n := range *vpn.server.address {
+		reserved = append(reserved, copyIP(n.IP))
+	}
+	// loop over the clients addresses
+	for _, client := range vpn.peers {
+		for _, n := range *client.allowedIPs {
+			reserved = append(reserved, copyIP(n.IP))
+		}
+	}
+	return reserved
+}
+
+// ProvideNetSlice generates a new netslice (for a new client
+// for example). It ensures that there is no overlap. An error
+// is raised whan no ip are available
+func (vpn *WGVPN) ProvideNetSlice() (*NetSlice, error) {
+	reserved := vpn.ReservedIPs()
+	// new netslice
+	out := NewNetSlice()
+	// loop over the networks
+	for _, n := range *vpn.metadata.networks {
+		// loop over the addresses within each network
+		list, stop := Iterate(n)
+		loop := true
+		for loop {
+			// generate an IP
+			ip, ok := <-list
+			// return error if no IP remains
+			if !ok {
+				return nil, fmt.Errorf("No available IP")
+			}
+			// check if the ip is reserved
+			// and if it is a special address
+			special := ip.IsMulticast() || ip.IsUnspecified()
+			if !special && findIP(ip, reserved) < 0 {
+				out.Append(&net.IPNet{
+					IP:   ip,
+					Mask: n.Mask,
+				})
+
+				// close the generator
+				stop <- true
+				// stop the loop
+				loop = false
+			}
+		}
+	}
+	return &out, nil
 }

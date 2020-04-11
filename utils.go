@@ -55,7 +55,7 @@ func getPublicKeyFromFile(p string) (string, error) {
 }
 
 // map clientName->Key
-func extractPairsFromFolder(folder string) map[string]string {
+func extractPairsFromFolder(folder string, clientAsKey bool) map[string]string {
 	pairs := make(map[string]string)
 	files, err := ioutil.ReadDir(folder)
 	if err != nil {
@@ -65,10 +65,12 @@ func extractPairsFromFolder(folder string) map[string]string {
 		// fmt.Println(f.Name(), f)
 		name := strings.TrimSuffix(f.Name(), DefaultConfigSuffix)
 		if !f.IsDir() {
-			// fmt.Println(path.Join(folder, f.Name()))
-			// fmt.Println(getPublicKeyFromFile(path.Join(folder, f.Name())))
 			if pk, err := getPublicKeyFromFile(path.Join(folder, f.Name())); err == nil {
-				pairs[name] = pk
+				if clientAsKey {
+					pairs[name] = pk
+				} else {
+					pairs[pk] = name
+				}
 			}
 		}
 	}
@@ -155,4 +157,19 @@ func fileExist(file string) bool {
 		return true
 	}
 	return false
+}
+
+func copyIP(ip net.IP) net.IP {
+	tmp := make([]byte, len(ip))
+	copy(tmp, ip)
+	return tmp
+}
+
+func findIP(ip net.IP, slice []net.IP) int {
+	for i, addr := range slice {
+		if ip.Equal(addr) {
+			return i
+		}
+	}
+	return -1
 }

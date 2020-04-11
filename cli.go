@@ -518,21 +518,14 @@ func cmdAdd(c *cli.Context) error {
 		return err
 	}
 
-	// get the right base IP
-	baseIP := vpn.metadata.networks.Copy()
-	for j := 0; j < vpn.NumberOfPeers()+1; j++ {
-		// increment
-		// check if the increment failed
-		if err := baseIP.Increment(); err != nil {
-			return fmt.Errorf("Error while incrementing IP (%d times from %s)",
-				j+1,
-				baseIP.String())
-		}
-	}
-
 	// now we are ready to create clients
 	clients := make([]*WGClient, len(RT.clients.Value()))
 	for i, clientName := range RT.clients.Value() {
+		// assign a new netslice
+		baseIP, err := vpn.ProvideNetSlice()
+		if err != nil {
+			return err
+		}
 		// create client
 		clients[i] = NewWGClient(baseIP, !c.Bool("no-psk"), vpn.metadata.dns)
 		// save client config
@@ -553,9 +546,9 @@ func cmdAdd(c *cli.Context) error {
 		// add client to vpn (as peer)
 		vpn.peers = append(vpn.peers, clients[i].ToPeer())
 		// increment IP
-		if err := baseIP.Increment(); err != nil {
-			return fmt.Errorf("Error while incrementing IP (%v)", err)
-		}
+		// if err := baseIP.Increment(); err != nil {
+		// 	return fmt.Errorf("Error while incrementing IP (%v)", err)
+		// }
 	}
 
 	return vpn.Save(connPath)
@@ -575,8 +568,9 @@ func cmdShow(c *cli.Context) error {
 	keys := vpn.PeerPublicKeys()
 
 	// extract key->client map from the client folder
-	pairs := extractPairsFromFolder(RT.clientDir)
+	pairs := extractPairsFromFolder(RT.clientDir, false)
 
+	fmt.Println(pairs)
 	// print config name
 	greenBold.Print("interface")
 	fmt.Print(": ")
@@ -600,15 +594,6 @@ func cmdShow(c *cli.Context) error {
 // }
 
 func cmdRm(c *cli.Context) error {
-	// Server ---
-	// Get the name of the connection (wg0)
-	// var name string
-	// if c.NArg() > 0 {
-	// 	name = cleanString(c.Args().First())
-	// } else {
-	// 	name = DefaultConnectionName
-	// }
-
 	// Read the VPN config
 	connPath := path.Join(RT.serverDir, RT.connName+DefaultConfigSuffix)
 	vpn, err := ReadVPN(connPath)
@@ -618,10 +603,9 @@ func cmdRm(c *cli.Context) error {
 
 	publicKeyToRemove := make([]string, 0)
 	filesToRemove := make([]string, 0)
-	// savedClients := getClientsFromFolder(RT.clientDir)
 
 	// extract client_name->key map from the client folder
-	pairs := extractPairsFromFolder(RT.clientDir)
+	pairs := extractPairsFromFolder(RT.clientDir, true)
 
 	for _, c := range RT.clients.Value() {
 		if key, exists := pairs[c]; exists {
@@ -652,7 +636,7 @@ func cmdRm(c *cli.Context) error {
 					pk.Base64(), RT.connName)
 			}
 		} else {
-			yellowBold.Printf("The key %s is not valid", pkstr)
+			yellowBold.Printf("The key %s is not valid\n", pkstr)
 		}
 	}
 

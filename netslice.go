@@ -22,9 +22,7 @@ func NewNetSlice() NetSlice {
 // string looking like "addr/mask, addr/mask ..."
 func NewNetSliceFromString(s string) (NetSlice, error) {
 	slice := NewNetSlice()
-	// fmt.Println(s, strings.Split(s, ","))
 	for _, sn := range strings.Split(s, ",") {
-		// fmt.Println(sn)
 		n, err := parseAddressAndMask(strings.TrimSpace(sn))
 		if err != nil {
 			return nil, err
@@ -46,7 +44,6 @@ func NewNetSliceFromStringSlice(slice []string) (NetSlice, error) {
 // Append adds a new element in the slice
 func (ns *NetSlice) Append(n *net.IPNet) {
 	*ns = append(*ns, n)
-	// fmt.Printf("%v\n", ns)
 }
 
 // Increment change every IP in the nets of the slice
@@ -90,4 +87,55 @@ func (ns *NetSlice) String() string {
 		s[i] = n.String()
 	}
 	return strings.Join(s, ", ")
+}
+
+// Iterate returns a channel yielding IP addresses
+// included in IP network
+func Iterate(n *net.IPNet) (chan net.IP, chan bool) {
+	// create a copy of the IP address setting
+	// free bits to zero
+	base := n.IP.Mask(n.Mask)
+	// init channels
+	c := make(chan net.IP, 0)
+	stop := make(chan bool, 1)
+	//
+	size := len(base)
+	// get the mask
+	frozen, total := n.Mask.Size()
+	// number of IP (2^(n-k))
+	nIP := 1 << (total - frozen)
+	// run
+	go func() {
+		c <- base
+		for i := 0; i < nIP-1; i++ {
+			select {
+			case <-stop:
+				// early close
+				close(stop)
+				close(c)
+				// stop
+				return
+			default:
+			}
+			// create a new buffer
+			// tmp := make([]byte, len(base))
+			// byte index (starting from the end)
+			k := 1
+			// increment last byte
+			base[size-k]++
+			for base[size-k] == 0 {
+				// increment last byte if 255 is reached
+				k++
+				base[size-k]++
+			}
+			// copy base into tmp
+			// copy(tmp, base)
+			// send buffer
+			c <- copyIP(base)
+		}
+		// close
+		close(c)
+	}()
+
+	return c, stop
 }
