@@ -49,7 +49,7 @@ deps:
 	@$(ARCH) $(GO) get -u ./...
 	@echo -e ${OK}
 
-build:
+build: doc
 	@echo -n "Building $(BIN)              "
 	@$(ARCH) $(GO) build -o $(BIN) *.go
 	@mkdir -p $(BIN_DIR)/$(DPKG_ARCH)
@@ -84,11 +84,13 @@ debian:
 	@echo -e ${OK}
 
 doc: 
-	@echo -n "Generating documentation     "
-	@$(GO) doc . > wg-easy-vpn.md
+	@echo -n "Generating documentation          "
+	@$(GO) test -run TestGenDoc 1>/dev/null
+	@mv /tmp/wg-easy-vpn.ex wg-easy-vpn.1
 	@echo -e ${OK}
 
 clean:
-	@echo -n "Removing binaries wg-easy-vpn-*             "
-	@rm -rf wg-easy-vpn wg-easy-vpn-*
+	@echo -n "Removing binaries wg-easy-vpn-*   "
+	@rm -rf $(BIN) $(BIN)-*
+	@rm -rf debian/$(BIN)
 	@echo -e ${OK}
