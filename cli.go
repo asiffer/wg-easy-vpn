@@ -84,23 +84,31 @@ func initRuntime() {
 	RT.keepFile = false
 }
 
+var appDescription = `
+	wg-easy-vpn is a tool designed to ease the set-up of a WireGuard VPN.  In 
+	particular you can easily create a server and then add clients.  You  can 
+	also  export  the clients configurations through QR codes.  When your vpn 
+	is set up, you just have to invoke wg or wg-quick.`
+
 func initApp() {
 	app = &cli.App{
 		Name:                   "wg-easy-vpn",
-		ArgsUsage:              "[wg connection]",
+		ArgsUsage:              "interface",
 		Version:                "1.0b",
-		Authors:                []*cli.Author{&cli.Author{Name: "asr"}},
-		Copyright:              "GPLv3",
+		Authors:                []*cli.Author{&cli.Author{Name: "Alban Siffer", Email: "alban.siffer@gmail.com"}},
+		Copyright:              "wg-easy-vpn source code is written under GPLv3 license (https://www.gnu.org/licenses/gpl-3.0.en.html)",
 		EnableBashCompletion:   true,
 		UseShortOptionHandling: true,
-		Action:                 func(c *cli.Context) error { return nil },
+		Usage:       "Setup a Wireguard VPN simply",
+		Description: appDescription,
+		Action:      func(c *cli.Context) error { return nil },
 		Commands: []*cli.Command{
 			{
 				Name:      "create",
-				Usage:     "create a new Wireguard VPN from scratch",
+				Usage:     "Create a new Wireguard VPN from scratch",
 				Action:    cmdCreate,
 				Before:    setConnectionName,
-				ArgsUsage: "[wg connection]",
+				ArgsUsage: "<interface>",
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
 						Name:        "no-psk",
@@ -112,13 +120,15 @@ func initApp() {
 						Name:        "server-dir",
 						Aliases:     []string{"d"},
 						Value:       DefaultServerConfigDirectory,
+						DefaultText: "directory",
 						Destination: &RT.serverDir,
-						Usage:       "directory to store the server configuration",
+						Usage:       "Directory to store the server configuration",
 					},
 					&cli.StringSliceFlag{
 						Name:        "net",
 						Aliases:     []string{"n"},
 						Usage:       "VPN networks",
+						DefaultText: "network",
 						Destination: RT.networks,
 						Value:       cli.NewStringSlice(DefaultNetwork),
 					},
@@ -127,25 +137,28 @@ func initApp() {
 						Aliases:     []string{"p"},
 						Usage:       "Listening UDP port",
 						Destination: &RT.port,
+						DefaultText: "port",
 						Value:       DefaultListeningPort,
 					},
 					&cli.StringFlag{
 						Name:        "endpoint",
 						Aliases:     []string{"e"},
 						Usage:       "Address or domain name of the server",
+						DefaultText: "address",
 						Destination: &RT.endpoint,
 						Required:    true,
 					},
 					&cli.StringSliceFlag{
 						Name:        "dns",
 						Usage:       "IP address of the DNS to use",
+						DefaultText: "ip",
 						Destination: RT.dns,
 						Required:    false,
 					},
 					&cli.BoolFlag{
 						Name:        "force",
 						Aliases:     []string{"f"},
-						Usage:       "override possible previous config",
+						Usage:       "Override possible previous config",
 						Destination: &RT.force,
 						Value:       false,
 						Required:    false,
@@ -155,7 +168,7 @@ func initApp() {
 			{
 				Name:      "add",
 				Usage:     "Add a new client to the VPN",
-				ArgsUsage: "[wg connection]",
+				ArgsUsage: "[wg conn]",
 				Action:    cmdAdd,
 				Before:    setConnectionName,
 				Flags: []cli.Flag{
@@ -167,19 +180,22 @@ func initApp() {
 					&cli.StringFlag{
 						Name:        "server-dir",
 						Value:       DefaultServerConfigDirectory,
-						Usage:       "directory to store the server configuration",
+						Usage:       "Directory to store the server configuration",
+						DefaultText: "directory",
 						Destination: &RT.serverDir,
 					},
 					&cli.StringFlag{
 						Name:        "client-dir",
 						Value:       DefaultClientConfigDirectory,
-						Usage:       "directory to store client configurations",
+						Usage:       "Directory to store client configurations",
+						DefaultText: "directory",
 						Destination: &RT.clientDir,
 					},
 					&cli.StringSliceFlag{
 						Name:        "client",
 						Aliases:     []string{"c"},
 						Usage:       "Client to add",
+						DefaultText: "name",
 						Required:    true,
 						Destination: RT.clients,
 					},
@@ -188,24 +204,26 @@ func initApp() {
 						Aliases: []string{"r"},
 						Usage:   "Default routes managed by the VPN",
 						// Value:       cli.NewStringSlice("0.0.0.0/0", "::/0"),
+						DefaultText: "network",
 						Destination: RT.routes,
 					},
 					&cli.StringSliceFlag{
 						Name:        "dns",
 						Usage:       "IP address of the DNS to use",
+						DefaultText: "ip",
 						Destination: RT.dns,
 					},
 					&cli.BoolFlag{
 						Name:        "force",
 						Aliases:     []string{"f"},
-						Usage:       "override possible previous config",
+						Usage:       "Override possible previous config",
 						Required:    false,
 						Destination: &RT.force,
 					},
 					&cli.BoolFlag{
 						Name:        "export",
 						Aliases:     []string{"e"},
-						Usage:       "export the config to an image (png or jpg) through a qrcode",
+						Usage:       "Export the config to an image (png or jpg) through a qrcode",
 						Required:    false,
 						Value:       false,
 						Destination: &RT.export,
@@ -213,8 +231,9 @@ func initApp() {
 					&cli.StringFlag{
 						Name:        "export-format",
 						Aliases:     []string{"t"},
-						Usage:       "define the format of the exported qrcode (txt, jpg or png). If this flag is not set, the qrcode is printed to stdout",
+						Usage:       "Define the format of the exported qrcode (txt, jpg or png). If this flag is not set, the qrcode is printed to stdout",
 						Required:    false,
+						DefaultText: "format",
 						Destination: &RT.exportFormat,
 					},
 				},
@@ -222,40 +241,38 @@ func initApp() {
 			{
 				Name:      "show",
 				Usage:     "Show the clients of the VPN",
-				ArgsUsage: "[wg connection]",
+				ArgsUsage: "[wg conn]",
 				Action:    cmdShow,
 				Before:    setConnectionName,
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:        "server-dir",
 						Value:       DefaultServerConfigDirectory,
-						Usage:       "directory of the server configuration",
+						Usage:       "Directory of the server configuration",
+						DefaultText: "directory",
 						Destination: &RT.serverDir,
 					},
 					&cli.StringFlag{
 						Name:        "client-dir",
 						Value:       DefaultClientConfigDirectory,
-						Usage:       "directory of the client configuration",
+						Usage:       "Directory of the client configuration",
+						DefaultText: "directory",
 						Destination: &RT.clientDir,
 					},
 				},
 			},
-			// {
-			// 	Name:   "version",
-			// 	Usage:  "Print version",
-			// 	Action: cmdVersion,
-			// },
 			{
 				Name:      "rm",
 				Usage:     "Remove a client from the VPN",
 				Action:    cmdRm,
 				Before:    setConnectionName,
-				ArgsUsage: "[wg connection]",
+				ArgsUsage: "[wg conn]",
 				Flags: []cli.Flag{
 					&cli.StringSliceFlag{
 						Name:        "client",
 						Aliases:     []string{"c"},
 						Usage:       "Client to remove",
+						DefaultText: "name/public-key",
 						Required:    true,
 						Destination: RT.clients,
 					},
@@ -269,31 +286,20 @@ func initApp() {
 					&cli.StringFlag{
 						Name:        "server-dir",
 						Value:       DefaultServerConfigDirectory,
-						Usage:       "directory of the server configuration",
+						Usage:       "Directory of the server configuration",
+						DefaultText: "directory",
 						Destination: &RT.serverDir,
 					},
 					&cli.StringFlag{
 						Name:        "client-dir",
 						Value:       DefaultClientConfigDirectory,
-						Usage:       "directory of the client configuration",
+						Usage:       "Directory of the client configuration",
+						DefaultText: "directory",
 						Destination: &RT.clientDir,
 					},
 				},
 			},
-			// {
-			// 	Name:   "show",
-			// 	Usage:  "Print current configuration",
-			// 	Action: cmdShow,
-			// },
 		},
-		// app.Flags = []cli.Flag{
-		// 	&cli.BoolFlag{
-		// 		Name:     "--force",
-		// 		Aliases:  []string{"f"},
-		// 		Usage:    "override possible previous config",
-		// 		Required: false,
-		// 	},
-		// }
 	}
 }
 
