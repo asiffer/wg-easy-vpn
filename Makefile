@@ -53,7 +53,7 @@ build:
 	@echo -n "Building $(BIN)              "
 	@$(ARCH) $(GO) build -o $(BIN) *.go
 	@mkdir -p $(BIN_DIR)/$(DPKG_ARCH)
-	@cp $(BIN) $(BIN_DIR)/$(DPKG_ARCH)
+	@cp $(BIN) $(BIN_DIR)/$(BIN)-$(DPKG_ARCH)
 	@echo -e ${OK}
 
 install:

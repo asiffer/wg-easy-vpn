@@ -70,7 +70,7 @@ If you don't have a `Go` compiler, you can directly download the final binaries.
 
 | Version | `amd64` | `arm64` | `armhf` |
 |---------|---------|---------|---------|
-| `1.0b`  | [![badge](https://img.shields.io/badge/1.0b-amd64-00ADD8?style=flat-square&logo=go)]() | [![badge](https://img.shields.io/badge/1.0b-arm64-00ADD8?style=flat-square&logo=go)]() | [![badge](https://img.shields.io/badge/1.0b-armhf-00ADD8?style=flat-square&logo=go)]() |
+| `1.0b`  | [![badge](https://img.shields.io/badge/1.0b-amd64-00ADD8?style=flat-square&logo=go)](https://github.com/asiffer/wg-easy-vpn/releases/download/v1.0b/wg-easy-vpn-amd64)) | [![badge](https://img.shields.io/badge/1.0b-arm64-00ADD8?style=flat-square&logo=go)](https://github.com/asiffer/wg-easy-vpn/releases/download/v1.0b/wg-easy-vpn-arm64) | [![badge](https://img.shields.io/badge/1.0b-armhf-00ADD8?style=flat-square&logo=go)](https://github.com/asiffer/wg-easy-vpn/releases/download/v1.0b/wg-easy-vpn-armhf) |
 | `1.0a`  | [![badge](https://img.shields.io/badge/1.0a-amd64-00ADD8?style=flat-square&logo=go)](https://github.com/asiffer/wg-easy-vpn/releases/download/1.0a/wg-easy-vpn-amd64) | [![badge](https://img.shields.io/badge/1.0a-arm64-00ADD8?style=flat-square&logo=go)](https://github.com/asiffer/wg-easy-vpn/releases/download/1.0a/wg-easy-vpn-arm64) | [![badge](https://img.shields.io/badge/1.0a-armhf-00ADD8?style=flat-square&logo=go)](https://github.com/asiffer/wg-easy-vpn/releases/download/1.0a/wg-easy-vpn-armhf)
 
 <!-- ### Debian package
