@@ -2,7 +2,7 @@ Source: wg-easy-vpn
 Section: net
 Priority: optional
 Maintainer: asr <asr@nabla.ovh>
-Build-Depends: debhelper-compat (= 11)
+Build-Depends:
 Standards-Version: 4.4.0
 Homepage: https://github.com/asiffer/wg-easy-vpn
 

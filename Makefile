@@ -83,6 +83,13 @@ debian:
 	@mv ../wg-easy-vpn_*.deb dist/
 	@echo -e ${OK}
 
+debian-no-sign:
+	@echo "Creating debian package      "
+	@dpkg-buildpackage -a $(DPKG_ARCH) -b --no-sign
+	@mkdir -p dist/
+	@mv ../wg-easy-vpn_*.deb dist/
+	@echo -e ${OK}
+
 doc: 
 	@echo -n "Generating documentation          "
 	@$(GO) test -run TestGenDoc 
