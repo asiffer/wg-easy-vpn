@@ -43,6 +43,7 @@ jobs:
       - name: Create debian packages
         working-directory: go/src/wg-easy-vpn
         run: |
+          make doc
           make debian-no-sign GOARCH=amd64
           make debian-no-sign GOARCH=arm64
           make debian-no-sign GOARCH=arm GOARM=7
