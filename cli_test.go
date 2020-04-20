@@ -269,6 +269,72 @@ func TestRm(t *testing.T) {
 	if err := app.Run(cmdl); err != nil {
 		t.Errorf("%v", err)
 	}
+
+	if p := path.Join(clientDir, "client0"+DefaultConfigSuffix); fileExist(p) {
+		t.Errorf("Client config file remain at %s:\n%v", p, readFileContent(p))
+	}
+
+	if p := path.Join(clientDir, "client1"+DefaultConfigSuffix); fileExist(p) {
+		t.Errorf("Client config file remain at %s:\n%v", p, readFileContent(p))
+	}
+
+	if err := os.RemoveAll(dir); err != nil {
+		t.Errorf("%v", err)
+	}
+}
+
+func TestAddWithDNSMerge(t *testing.T) {
+	title("Testing adding client with new DNS")
+
+	connName := "wgDNS"
+	dir, err := createServerWithClients(connName, 3)
+	if err != nil {
+		t.Fatalf("Erorr while creating server (%v)", err)
+	}
+	clientDir := path.Join(dir, "clients")
+
+	clientName := "dnsboy"
+	_Reset()
+	// fake commands
+	cmdl := []string{
+		app.Name,
+		"add",
+		"--server-dir", dir,
+		"--route", route,
+		"--client-dir", clientDir,
+		"-c", clientName,
+		"--dns", "8.8.8.8",
+		connName,
+	}
+
+	if err := app.Run(cmdl); err != nil {
+		t.Errorf("%v", err)
+	}
+
+	file, err := ParseFile(path.Join(clientDir, clientName+DefaultConfigSuffix))
+	fmt.Println(file.String())
+	if err != nil {
+		t.Fatal(err)
+	}
+	section, err := file.GetSection("Interface")
+	if err != nil {
+		t.Fatal(err)
+	}
+	slice, err := section.GetIPArray("DNS")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if ip := slice[0].String(); ip != dns {
+		t.Errorf("Bad DNS, expected %s, got %s", dns, ip)
+	}
+	if ip := slice[1].String(); ip != "8.8.8.8" {
+		t.Errorf("Bad DNS, expected %s, got %s", dns, ip)
+	}
+	if len(slice) != 2 {
+		t.Errorf("Bad slice length: %v (expected 2)", slice)
+	}
+
 	if err := os.RemoveAll(dir); err != nil {
 		t.Errorf("%v", err)
 	}

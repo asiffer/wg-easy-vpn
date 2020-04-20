@@ -28,7 +28,6 @@ func LoadMetadata(name, path string) (*Metadata, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Error while retrieving section %s on file %s (%w)", name, path, err)
 	}
-	// fmt.Println(section.String())
 
 	var meta Metadata
 

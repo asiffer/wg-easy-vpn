@@ -1,5 +1,12 @@
+wg-easy-vpn (1.0b) unstable; urgency=medium
+
+  * add man pages
+  * better IP address provisioning
+
+ -- Alban Siffer <asr@nabla.ovh>  Sun, 12 Apr 2020 15:52:52 +0200
+
 wg-easy-vpn (1.0a) unstable; urgency=medium
 
   * Initial release
 
- -- asr <asr@unknwon>  Sun, 22 Mar 2020 11:42:24 +0100
+ -- Alban Siffer <asr@nabla.ovh>  Sun, 22 Mar 2020 11:42:24 +0100

@@ -16,7 +16,7 @@ const (
 
 var manPageTemplate = `
 .ll 80
-.TH wg-easy-vpn 8 "April 14 2020" wg-easy-vpn "Wireguard Easy VPN"
+.TH wg-easy-vpn 1 "April 14 2020" wg-easy-vpn "Wireguard Easy VPN"
 
 .SH NAME
 {{.Name}} \- {{.Usage}}

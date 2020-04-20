@@ -225,9 +225,6 @@ func NewFile() *File {
 }
 
 func removeComment(line string) string {
-	// if i := strings.Index(line, CommentPrefix); i > 0 {
-	// 	return line[:i]
-	// }
 	for _, pre := range CommentPrefixes {
 		if strings.HasPrefix(line, pre) {
 			return ""

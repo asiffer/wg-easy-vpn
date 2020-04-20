@@ -5,6 +5,7 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"path"
 	"strings"
@@ -415,7 +416,6 @@ func saveClient(name string,
 func cmdCreate(c *cli.Context) error {
 	// Server ---
 	var err error
-	fmt.Println(c.Args())
 
 	// Get networks
 	nets := NewNetSlice()
@@ -508,6 +508,21 @@ func exportClientConfig(clientName string) error {
 	return nil
 }
 
+func mergeDNS(metadataDNS []net.IP) ([]net.IP, error) {
+	dns := make([]net.IP, len(metadataDNS))
+	copy(dns, metadataDNS)
+	for _, ipstr := range RT.dns.Value() {
+		ip := net.ParseIP(ipstr)
+		if ip == nil {
+			return nil, fmt.Errorf("Error while parsing DNS ip: %s", ipstr)
+		}
+		if findIP(ip, dns) < 0 {
+			dns = append(dns, ip)
+		}
+	}
+	return dns, nil
+}
+
 func cmdAdd(c *cli.Context) error {
 	// Server ---
 
@@ -524,6 +539,12 @@ func cmdAdd(c *cli.Context) error {
 		return err
 	}
 
+	// DNS override?
+	dns, err := mergeDNS(vpn.metadata.dns)
+	if err != nil {
+		return fmt.Errorf("Error while merging DNS IP")
+	}
+
 	// now we are ready to create clients
 	clients := make([]*WGClient, len(RT.clients.Value()))
 	for i, clientName := range RT.clients.Value() {
@@ -533,7 +554,7 @@ func cmdAdd(c *cli.Context) error {
 			return err
 		}
 		// create client
-		clients[i] = NewWGClient(baseIP, !c.Bool("no-psk"), vpn.metadata.dns)
+		clients[i] = NewWGClient(baseIP, !c.Bool("no-psk"), dns)
 		// save client config
 		if err := saveClient(clientName, vpn.server, clients[i], vpn.metadata.endpoint); err != nil {
 			return fmt.Errorf("Error while saving client '%s': %v", clientName, err)
@@ -551,10 +572,6 @@ func cmdAdd(c *cli.Context) error {
 		}
 		// add client to vpn (as peer)
 		vpn.peers = append(vpn.peers, clients[i].ToPeer())
-		// increment IP
-		// if err := baseIP.Increment(); err != nil {
-		// 	return fmt.Errorf("Error while incrementing IP (%v)", err)
-		// }
 	}
 
 	return vpn.Save(connPath)
@@ -576,7 +593,6 @@ func cmdShow(c *cli.Context) error {
 	// extract key->client map from the client folder
 	pairs := extractPairsFromFolder(RT.clientDir, false)
 
-	fmt.Println(pairs)
 	// print config name
 	greenBold.Print("interface")
 	fmt.Print(": ")
@@ -595,10 +611,6 @@ func cmdShow(c *cli.Context) error {
 	return nil
 }
 
-// func getPublicKeyFromClient(client string) (string, string) {
-
-// }
-
 func cmdRm(c *cli.Context) error {
 	// Read the VPN config
 	connPath := path.Join(RT.serverDir, RT.connName+DefaultConfigSuffix)
@@ -616,18 +628,12 @@ func cmdRm(c *cli.Context) error {
 	for _, c := range RT.clients.Value() {
 		if key, exists := pairs[c]; exists {
 			publicKeyToRemove = append(publicKeyToRemove, key)
-			// if !RT.keepFile {
 			filesToRemove = append(filesToRemove,
 				path.Join(RT.clientDir, c+DefaultConfigSuffix))
-			// }
 		} else {
 			// maybe a public key has been given
 			publicKeyToRemove = append(publicKeyToRemove, c)
 		}
-	}
-
-	for _, p := range vpn.peers {
-		fmt.Println(p.Public())
 	}
 
 	pk := NewKey()

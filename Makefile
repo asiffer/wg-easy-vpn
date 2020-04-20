@@ -49,7 +49,7 @@ deps:
 	@$(ARCH) $(GO) get -u ./...
 	@echo -e ${OK}
 
-build: doc
+build:
 	@echo -n "Building $(BIN)              "
 	@$(ARCH) $(GO) build -o $(BIN) *.go
 	@mkdir -p $(BIN_DIR)/$(DPKG_ARCH)
@@ -78,14 +78,14 @@ cover:
 
 debian:
 	@echo "Creating debian package      "
-	@dpkg-buildpackage -a $(DPKG_ARCH) -b -us -uc
+	@dpkg-buildpackage -a $(DPKG_ARCH) -b
 	@mkdir -p dist/
 	@mv ../wg-easy-vpn_*.deb dist/
 	@echo -e ${OK}
 
 doc: 
 	@echo -n "Generating documentation          "
-	@$(GO) test -run TestGenDoc 1>/dev/null
+	@$(GO) test -run TestGenDoc 
 	@mv /tmp/wg-easy-vpn.ex wg-easy-vpn.1
 	@echo -e ${OK}
 

@@ -6,6 +6,7 @@ package main
 import (
 	"fmt"
 	"net"
+	"strings"
 )
 
 // WGNode defines a Wireguard node (client or server)
@@ -96,14 +97,14 @@ func (node *WGNode) Section(section *Section) {
 }
 
 // DNS returns the DNS address that client should use
-// func (client *WGClient) DNS() string {
-// 	nDNS := len(client.dns)
-// 	strDNS := make([]string, nDNS)
-// 	for i := 0; i < nDNS; i++ {
-// 		strDNS[i] = client.dns[i].String()
-// 	}
-// 	return strings.Join(strDNS, ", ")
-// }
+func (client *WGClient) DNS() string {
+	nDNS := len(client.dns)
+	strDNS := make([]string, nDNS)
+	for i := 0; i < nDNS; i++ {
+		strDNS[i] = client.dns[i].String()
+	}
+	return strings.Join(strDNS, ", ")
+}
 
 // ToPeer turns a Node into a Peer
 func (node *WGNode) ToPeer() *WGPeer {
@@ -160,4 +161,18 @@ func (client *WGClient) ToPeer() *WGClientAsPeer {
 	return &WGClientAsPeer{
 		WGPeer: *client.WGNode.ToPeer(),
 	}
+}
+
+func (client *WGClient) String() string {
+	s := client.WGNode.String()
+	if client.dns != nil {
+		s += fmt.Sprintf("DNS = %s\n", client.DNS())
+	}
+	return s
+}
+
+// Section enrich a section with server attributes
+func (client *WGClient) Section(section *Section) {
+	client.WGNode.Section(section)
+	section.Set("DNS", client.DNS())
 }

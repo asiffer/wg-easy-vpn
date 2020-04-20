@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"path"
 	"runtime"
 )
@@ -20,4 +21,13 @@ func init() {
 	workdir = path.Dir(filename)
 	testpath = path.Join(workdir, "test")
 	fmt.Println("Working directory:", workdir)
+}
+
+func readFileContent(p string) string {
+	content, err := ioutil.ReadFile(p)
+	if err != nil {
+		fmt.Printf("Error while reading %s: %v\n", p, err)
+		return ""
+	}
+	return string(content)
 }

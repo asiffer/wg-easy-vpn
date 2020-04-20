@@ -8,12 +8,10 @@ Homepage: https://github.com/asiffer/wg-easy-vpn
 
 Package: wg-easy-vpn
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: A command line tool to ease WireGuard VPN setup
  wg-easy-vpn is a tool designed to ease the set-up of a
  WireGuard (https://www.wireguard.com/) VPN. 
  In particular you can easily create a server
  and then add clients. You can also export the clients
  configurations through QR codes.
- When your vpn is set up, you just have to invoke `wg-quick`
- for instance.
+ When your vpn is set up, you just have to invoke wg or wg-quick.
