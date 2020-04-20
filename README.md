@@ -70,7 +70,7 @@ If you don't have a `Go` compiler, you can directly download the final binaries.
 
 | Version | `amd64` | `arm64` | `armhf` |
 |---------|---------|---------|---------|
-| `1.0b`  | [![badge](https://img.shields.io/badge/1.0b-amd64-00ADD8?style=flat-square&logo=go)](https://github.com/asiffer/wg-easy-vpn/releases/download/v1.0b/wg-easy-vpn-amd64)) | [![badge](https://img.shields.io/badge/1.0b-arm64-00ADD8?style=flat-square&logo=go)](https://github.com/asiffer/wg-easy-vpn/releases/download/v1.0b/wg-easy-vpn-arm64) | [![badge](https://img.shields.io/badge/1.0b-armhf-00ADD8?style=flat-square&logo=go)](https://github.com/asiffer/wg-easy-vpn/releases/download/v1.0b/wg-easy-vpn-armhf) |
+| `1.0b`  | [![badge](https://img.shields.io/badge/1.0b-amd64-00ADD8?style=flat-square&logo=go)](https://github.com/asiffer/wg-easy-vpn/releases/download/v1.0b/wg-easy-vpn-amd64) | [![badge](https://img.shields.io/badge/1.0b-arm64-00ADD8?style=flat-square&logo=go)](https://github.com/asiffer/wg-easy-vpn/releases/download/v1.0b/wg-easy-vpn-arm64) | [![badge](https://img.shields.io/badge/1.0b-armhf-00ADD8?style=flat-square&logo=go)](https://github.com/asiffer/wg-easy-vpn/releases/download/v1.0b/wg-easy-vpn-armhf) |
 | `1.0a`  | [![badge](https://img.shields.io/badge/1.0a-amd64-00ADD8?style=flat-square&logo=go)](https://github.com/asiffer/wg-easy-vpn/releases/download/1.0a/wg-easy-vpn-amd64) | [![badge](https://img.shields.io/badge/1.0a-arm64-00ADD8?style=flat-square&logo=go)](https://github.com/asiffer/wg-easy-vpn/releases/download/1.0a/wg-easy-vpn-arm64) | [![badge](https://img.shields.io/badge/1.0a-armhf-00ADD8?style=flat-square&logo=go)](https://github.com/asiffer/wg-easy-vpn/releases/download/1.0a/wg-easy-vpn-armhf)
 
 <!-- ### Debian package
@@ -178,7 +178,7 @@ The parameter `--client-dir` can be used to change it.
 
 Obviously I did not reinvent the wheel: cryptographic stuff relies exclusively on the `crypto` packages of the `Go` standard library.
 
-Random keys (PSK and private keys) are generated with [`crypto/rand`](https://golang.org/pkg/crypto/rand/) and public key is generated with the `X25519` function from the package [`golang.org/x/crypto/curve25519`](https://pkg.go.dev/golang.org/x/crypto/curve25519?tab=doc).
+Random keys (PSK and private keys) are generated with [`crypto/rand`](https://golang.org/pkg/crypto/rand/) and public keys are generated with the `X25519` function from the package [`golang.org/x/crypto/curve25519`](https://pkg.go.dev/golang.org/x/crypto/curve25519?tab=doc).
 
 ## Changelog
 
