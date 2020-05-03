@@ -103,7 +103,7 @@ func Iterate(n *net.IPNet) (chan net.IP, chan bool) {
 	// get the mask
 	frozen, total := n.Mask.Size()
 	// number of IP (2^(n-k))
-	nIP := 1 << (total - frozen)
+	nIP := 1 << uint(total-frozen)
 	// run
 	go func() {
 		c <- base
