@@ -29,7 +29,7 @@ In the last version (`1.0b`), a problem occurs if a DNS IP is not provided when 
 You can use one of the following solutions:
 - Provide a DNS IP when creating the server: `wg-easy-vpn create --dns 1.1.1.1 ...`
 - Remove manually the DNS field in the client configurations
-- Use the `master` branch which is patched (See [`Go` tools](#go-tools) section to install the last version)
+- Use the `master` branch which is patched (See [`Go` tools](#go-tools) section to install the latest version)
 
 
 ## Contents
