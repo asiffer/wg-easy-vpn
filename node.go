@@ -165,7 +165,7 @@ func (client *WGClient) ToPeer() *WGClientAsPeer {
 
 func (client *WGClient) String() string {
 	s := client.WGNode.String()
-	if client.dns != nil {
+	if (client.dns != nil) && (len(client.dns) > 0) {
 		s += fmt.Sprintf("DNS = %s\n", client.DNS())
 	}
 	return s
@@ -174,5 +174,7 @@ func (client *WGClient) String() string {
 // Section enrich a section with server attributes
 func (client *WGClient) Section(section *Section) {
 	client.WGNode.Section(section)
-	section.Set("DNS", client.DNS())
+	if (client.dns != nil) && (len(client.dns) > 0) {
+		section.Set("DNS", client.DNS())
+	}
 }

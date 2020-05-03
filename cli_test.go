@@ -42,7 +42,29 @@ func createServer(name string) (string, error) {
 		"--net", network,
 		"--port", fmt.Sprintf("%d", port),
 		"--endpoint", endpoint,
-		"--dns", dns, name,
+		"--dns", dns,
+		name,
+	}
+
+	return dir, app.Run(cmdl)
+}
+
+func createServerWithoutDNS(name string) (string, error) {
+	_Reset()
+	// TempDir
+	dir, err := ioutil.TempDir(os.TempDir(), "wg_")
+	if err != nil {
+		return dir, err
+	}
+
+	cmdl := []string{
+		app.Name,
+		"create",
+		"--server-dir", dir,
+		"--net", network,
+		"--port", fmt.Sprintf("%d", port),
+		"--endpoint", endpoint,
+		name,
 	}
 
 	return dir, app.Run(cmdl)
@@ -337,5 +359,39 @@ func TestAddWithDNSMerge(t *testing.T) {
 
 	if err := os.RemoveAll(dir); err != nil {
 		t.Errorf("%v", err)
+	}
+}
+
+func TestAddWithoutDNS(t *testing.T) {
+	title("Testing adding client without DNS")
+
+	connName := "wgDNS"
+	dir, err := createServerWithoutDNS(connName)
+	if err != nil {
+		t.Fatalf("Erorr while creating server (%v)", err)
+	}
+	clientDir := path.Join(dir, "clients")
+
+	clientName := "dnsboy"
+	_Reset()
+	// fake commands
+	cmdl := []string{
+		app.Name,
+		"add",
+		"--server-dir", dir,
+		"--route", route,
+		"--client-dir", clientDir,
+		"-c", clientName,
+		connName,
+	}
+
+	if err := app.Run(cmdl); err != nil {
+		t.Errorf("%v", err)
+	}
+
+	file, err := ParseFile(path.Join(clientDir, clientName+DefaultConfigSuffix))
+	fmt.Println(file.String())
+	if err != nil {
+		t.Fatal(err)
 	}
 }
