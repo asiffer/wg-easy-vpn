@@ -19,6 +19,19 @@ for instance.
 
 **This tool does not aim to be used neither at large scale nor in critical/sensitive infrastructures.**
 
+### Current problems
+
+
+[**Issue**]
+In the last version (`1.0b`), a problem occurs if a DNS IP is not provided when the server is created: new client configuration will have an empty `DNS` field.
+
+[**Solution**]
+You can use one of the following solutions:
+- Provide a DNS IP when creating the server: `wg-easy-vpn create --dns 1.1.1.1 ...`
+- Remove manually the DNS field in the client configurations
+- Use the `master` branch which is patched (See [`Go` tools](#go-tools) section to install the last version)
+
+
 ## Contents
 
 - [Installation](#installation)
@@ -62,7 +75,7 @@ go get -u github.com/asiffer/wg-easy-vpn
 go install github.com/asiffer/wg-easy-vpn
 ```
 
-The advantage is that the tool is built according to your architecture. The drawback is the need to have `Go` installed on your host.
+The advantages are that you have the latest version (`master` branch) and the tool is built according to your architecture. The drawback is the need to have `Go` installed on your host.
 
 ### Binaries
 
@@ -73,14 +86,6 @@ If you don't have a `Go` compiler, you can directly download the final binaries.
 | `1.0b`  | [![download](assets/1.0b-amd64.svg)](https://github.com/asiffer/wg-easy-vpn/releases/download/v1.0b/wg-easy-vpn-amd64) | [![download](assets/1.0b-arm64.svg)](https://github.com/asiffer/wg-easy-vpn/releases/download/v1.0b/wg-easy-vpn-arm64) | [![download](assets/1.0b-armhf.svg)](https://github.com/asiffer/wg-easy-vpn/releases/download/v1.0b/wg-easy-vpn-armhf) |
 | `1.0a`  | [![download](assets/1.0a-amd64.svg)](https://github.com/asiffer/wg-easy-vpn/releases/download/1.0a/wg-easy-vpn-amd64) | [![download](assets/1.0a-arm64.svg)](https://github.com/asiffer/wg-easy-vpn/releases/download/1.0a/wg-easy-vpn-arm64) | [![download](assets/1.0a-armhf.svg)](https://github.com/asiffer/wg-easy-vpn/releases/download/1.0a/wg-easy-vpn-armhf)
 
-<!-- ### Debian package
-
-Debian packages are also available for different architectures
-to distribute `wg-easy-vpn` to various debian-like platforms.
-
-[![download](https://img.shields.io/badge/debian-amd64-A81D33?style=flat-square&logo=debian)](https://github.com/asiffer/wg-easy-vpn/releases/download/1.0a/wg-easy-vpn_1.0a_amd64.deb)
-[![download](https://img.shields.io/badge/debian-arm64-A81D33?style=flat-square&logo=debian)](https://github.com/asiffer/wg-easy-vpn/releases/download/1.0a/wg-easy-vpn_1.0a_arm64.deb)
-[![download](https://img.shields.io/badge/debian-armhf-A81D33?style=flat-square&logo=debian)](https://github.com/asiffer/wg-easy-vpn/releases/download/1.0a/wg-easy-vpn_1.0a_armhf.deb) -->
 
 ## Usage
 
