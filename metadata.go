@@ -26,7 +26,7 @@ func LoadMetadata(name, path string) (*Metadata, error) {
 
 	section, err := cfg.GetSection(name)
 	if err != nil {
-		return nil, fmt.Errorf("Error while retrieving section %s on file %s (%w)", name, path, err)
+		return nil, fmt.Errorf("error while retrieving section %s on file %s (%w)", name, path, err)
 	}
 
 	var meta Metadata
@@ -35,7 +35,7 @@ func LoadMetadata(name, path string) (*Metadata, error) {
 	if section.HasKey("DNS") {
 		meta.dns, err = section.GetIPArray("DNS")
 		if err != nil {
-			return nil, fmt.Errorf("Error while parsing DNS (%w)", err)
+			return nil, fmt.Errorf("error while parsing DNS (%w)", err)
 		}
 	}
 
@@ -52,10 +52,10 @@ func LoadMetadata(name, path string) (*Metadata, error) {
 		// meta.networks, err = mapIPNetStrList(key.Strings(","))
 		meta.networks, err = section.GetNetSlice("Network")
 		if err != nil {
-			return nil, fmt.Errorf("Error while parsing networks (%w)", err)
+			return nil, fmt.Errorf("error while parsing networks (%w)", err)
 		}
 	} else {
-		return nil, fmt.Errorf("No network specified")
+		return nil, fmt.Errorf("no network specified")
 	}
 	return &meta, nil
 }

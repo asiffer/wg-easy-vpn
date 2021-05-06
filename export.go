@@ -159,7 +159,7 @@ func downScale(bc barcode.Barcode) (barcode.Barcode, error) {
 	// rescale
 	bc, err := barcode.Scale(bc, width, height)
 	if err != nil {
-		return nil, fmt.Errorf("Error while scaling QRCode (%w)", err)
+		return nil, fmt.Errorf("error while scaling QRCode (%w)", err)
 	}
 	return bc, nil
 }
@@ -171,13 +171,13 @@ func encodeInput(r io.Reader) (barcode.Barcode, error) {
 	n, err := r.Read(p)
 	// check error
 	if err != nil {
-		return nil, fmt.Errorf("Error while exporting configuration file (%w)", err)
+		return nil, fmt.Errorf("error while exporting configuration file (%w)", err)
 	}
 	// encode input
 	qr, err := qrc.Encode(string(p[:n]), qrc.L, qrc.Unicode)
 	// check error
 	if err != nil {
-		return nil, fmt.Errorf("Error while encoding to QRCode (%w)", err)
+		return nil, fmt.Errorf("error while encoding to QRCode (%w)", err)
 	}
 	return qr, nil
 }

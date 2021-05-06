@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 const (
@@ -96,13 +96,13 @@ func initApp() {
 		Name:                   "wg-easy-vpn",
 		ArgsUsage:              "interface",
 		Version:                "1.0b",
-		Authors:                []*cli.Author{&cli.Author{Name: "Alban Siffer", Email: "alban.siffer@gmail.com"}},
+		Authors:                []*cli.Author{{Name: "Alban Siffer", Email: "alban.siffer@gmail.com"}},
 		Copyright:              "wg-easy-vpn source code is written under GPLv3 license (https://www.gnu.org/licenses/gpl-3.0.en.html)",
 		EnableBashCompletion:   true,
 		UseShortOptionHandling: true,
-		Usage:       "Setup a Wireguard VPN simply",
-		Description: appDescription,
-		Action:      func(c *cli.Context) error { return nil },
+		Usage:                  "Setup a Wireguard VPN simply",
+		Description:            appDescription,
+		Action:                 func(c *cli.Context) error { return nil },
 		Commands: []*cli.Command{
 			{
 				Name:      "create",
@@ -224,7 +224,7 @@ func initApp() {
 					&cli.BoolFlag{
 						Name:        "export",
 						Aliases:     []string{"e"},
-						Usage:       "Export the config to an image (png or jpg) through a qrcode",
+						Usage:       "export the config to an image (png or jpg) through a qrcode",
 						Required:    false,
 						Value:       false,
 						Destination: &RT.export,
@@ -314,7 +314,7 @@ func init() {
 func setConnectionName(c *cli.Context) error {
 	args := c.Args()
 	if c.NArg() == 0 {
-		return fmt.Errorf("The name of the connection is not given")
+		return fmt.Errorf("the name of the connection is not given")
 	}
 	last := args.Get(args.Len() - 1)
 	RT.connName = cleanString(last)
@@ -325,7 +325,7 @@ func saveServer(server *WGServer) error {
 	// file := path.Join(c.Path("server-dir"), name+DefaultConfigSuffix)
 	file := path.Join(RT.serverDir, RT.connName+DefaultConfigSuffix)
 	if fileExist(file) && !RT.force {
-		return fmt.Errorf("Configuration file already exists")
+		return fmt.Errorf("configuration file already exists")
 	}
 	f := NewFile()
 	sec := f.AddSection("Interface")
@@ -343,26 +343,26 @@ func saveMetadata(name string, meta *Metadata) error {
 	if fileExist(file) && !RT.force {
 		f, err := ParseFile(file)
 		if err != nil {
-			return fmt.Errorf("Error while loading metadata file (%w)", err)
+			return fmt.Errorf("error while loading metadata file (%w)", err)
 		}
 		if f.HasSection(name) {
-			return fmt.Errorf("The file %s already contains information about the %s connection", file, name)
+			return fmt.Errorf("the file %s already contains information about the %s connection", file, name)
 		}
 	}
 
 	sec := f.AddSection(name)
 
-	if err := sec.Set("Endpoint", meta.endpoint); err != nil {
-		return fmt.Errorf("Error while creating 'Endpoint' key: %v", err)
+	if err := sec.Set("endpoint", meta.endpoint); err != nil {
+		return fmt.Errorf("error while creating 'Endpoint' key: %v", err)
 	}
 
 	if err := sec.Set("Network", meta.networks.String()); err != nil {
-		return fmt.Errorf("Error while creating 'Network' key: %v", err)
+		return fmt.Errorf("error while creating 'Network' key: %v", err)
 	}
 
 	if len(meta.dns) > 0 {
 		if err := sec.Set("DNS", strings.Join(mapIPList(meta.dns), ", ")); err != nil {
-			return fmt.Errorf("Error while creating 'DNS' key: %v", err)
+			return fmt.Errorf("error while creating 'DNS' key: %v", err)
 		}
 	}
 
@@ -375,14 +375,14 @@ func saveClient(name string,
 	endpoint string) error {
 	// check directory
 	if err := ensureClientDirectoryExist(); err != nil {
-		return fmt.Errorf("Error while creating client config directory %s (%v)",
+		return fmt.Errorf("error while creating client config directory %s (%v)",
 			RT.clientDir, err)
 	}
 
 	// check if client file exist
 	file := path.Join(RT.clientDir, name+DefaultConfigSuffix)
 	if fileExist(file) && !RT.force {
-		return fmt.Errorf("A config file already exist for client %s", name)
+		return fmt.Errorf("a config file already exist for client %s", name)
 	}
 	// new config file
 	f := NewFile()
@@ -448,20 +448,20 @@ func cmdCreate(c *cli.Context) error {
 	if c.IsSet("dns") {
 		meta.dns, err = mapIPStrList(RT.dns.Value())
 		if err != nil {
-			return fmt.Errorf("Error while mapping DNS IP (%v)", err)
+			return fmt.Errorf("error while mapping DNS IP (%v)", err)
 		}
 	}
 
 	// save server
 	if err := saveServer(server); err != nil {
-		return fmt.Errorf("Error while saving server configuration: %v", err)
+		return fmt.Errorf("error while saving server configuration: %v", err)
 	}
-	green.Printf("The connection %s has been set up (%s)\n",
+	green.Printf("the connection %s has been set up (%s)\n",
 		RT.connName, path.Join(RT.serverDir, RT.connName+DefaultConfigSuffix))
 
 	// save metadata
 	if err := saveMetadata(RT.connName, &meta); err != nil {
-		return fmt.Errorf("Error while saving connection metadata: %v", err)
+		return fmt.Errorf("error while saving connection metadata: %v", err)
 	}
 	green.Printf("Metadata about the connection %s has been saved to %s\n",
 		RT.connName, path.Join(RT.serverDir, DefaultMetadataFile))
@@ -475,7 +475,7 @@ func exportClientConfig(clientName string) error {
 	// read
 	r, err := os.Open(file)
 	if err != nil {
-		return fmt.Errorf("Error while opening %s (%v)", file, err)
+		return fmt.Errorf("error while opening %s (%v)", file, err)
 	}
 	// outfile
 	var w *os.File
@@ -484,16 +484,14 @@ func exportClientConfig(clientName string) error {
 		file = strings.Replace(file, DefaultConfigSuffix, "."+RT.exportFormat, 1)
 		w, err = os.Create(file)
 		if err != nil {
-			return fmt.Errorf("Error while creating output file %s (%v)", file, err)
+			return fmt.Errorf("error while creating output file %s (%v)", file, err)
 		}
-		break
 	default:
 		w = os.Stdout
-		break
 	}
 
 	if err := ExportConfig(r, w); err != nil {
-		return fmt.Errorf("Error while exporting qrcode (%v)", err)
+		return fmt.Errorf("error while exporting qrcode (%v)", err)
 	}
 	r.Close()
 
@@ -503,7 +501,7 @@ func exportClientConfig(clientName string) error {
 
 	// changing permissions
 	if os.Chmod(file, 0600); err != nil {
-		return fmt.Errorf("Error while changing permissions of %s (%v)", file, err)
+		return fmt.Errorf("error while changing permissions of %s (%v)", file, err)
 	}
 	return nil
 }
@@ -514,7 +512,7 @@ func mergeDNS(metadataDNS []net.IP) ([]net.IP, error) {
 	for _, ipstr := range RT.dns.Value() {
 		ip := net.ParseIP(ipstr)
 		if ip == nil {
-			return nil, fmt.Errorf("Error while parsing DNS ip: %s", ipstr)
+			return nil, fmt.Errorf("error while parsing DNS ip: %s", ipstr)
 		}
 		if findIP(ip, dns) < 0 {
 			dns = append(dns, ip)
@@ -542,7 +540,7 @@ func cmdAdd(c *cli.Context) error {
 	// DNS override?
 	dns, err := mergeDNS(vpn.metadata.dns)
 	if err != nil {
-		return fmt.Errorf("Error while merging DNS IP")
+		return fmt.Errorf("error while merging DNS IP")
 	}
 
 	// now we are ready to create clients
@@ -557,7 +555,7 @@ func cmdAdd(c *cli.Context) error {
 		clients[i] = NewWGClient(baseIP, !c.Bool("no-psk"), dns)
 		// save client config
 		if err := saveClient(clientName, vpn.server, clients[i], vpn.metadata.endpoint); err != nil {
-			return fmt.Errorf("Error while saving client '%s': %v", clientName, err)
+			return fmt.Errorf("error while saving client '%s': %v", clientName, err)
 		}
 		green.Printf("Client %s has been added (%s) to %s\n",
 			clientName,
@@ -641,14 +639,14 @@ func cmdRm(c *cli.Context) error {
 		if pk.UpdateFromBase64(pkstr) == nil {
 			// remove publickey
 			if vpn.RemovePeerFromPublicKey(pk) != nil {
-				yellowBold.Printf("The client with publicKey %s has not been found\n",
+				yellowBold.Printf("the client with publicKey %s has not been found\n",
 					pk.Base64())
 			} else {
-				yellow.Printf("The client with public key %s has been removed from %s\n",
+				yellow.Printf("the client with public key %s has been removed from %s\n",
 					pk.Base64(), RT.connName)
 			}
 		} else {
-			yellowBold.Printf("The key %s is not valid\n", pkstr)
+			yellowBold.Printf("the key %s is not valid\n", pkstr)
 		}
 	}
 
@@ -656,9 +654,9 @@ func cmdRm(c *cli.Context) error {
 	if !RT.keepFile {
 		for _, f := range filesToRemove {
 			if err := os.Remove(f); err != nil {
-				return fmt.Errorf("Failed to remove %s (%v)", f, err)
+				return fmt.Errorf("failed to remove %s (%v)", f, err)
 			}
-			yellow.Printf("The file %s has been removed\n", f)
+			yellow.Printf("the file %s has been removed\n", f)
 		}
 	}
 

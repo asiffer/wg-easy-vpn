@@ -60,22 +60,22 @@ func peerFromSection(sec *Section) (*WGClientAsPeer, error) {
 	// Public key
 	pubkey, err := sec.GetKeyFromBase64("PublicKey")
 	if err != nil {
-		return nil, fmt.Errorf("Error while retrieving peer public key (%w)", err)
+		return nil, fmt.Errorf("error while retrieving peer public key (%w)", err)
 	}
 
 	// AllowedIPs (array of string)
 	ips, err := sec.GetNetSlice("AllowedIPs")
 	if err != nil {
-		return nil, fmt.Errorf("Error while retrieving peer allowedIPs (%w)", err)
+		return nil, fmt.Errorf("error while retrieving peer allowedIPs (%w)", err)
 	}
 
 	// PSK
-	psk := NewPresharedKey()
+	var psk PresharedKey
 	if sec.HasKey("PresharedKey") {
 		pskKey, err := sec.GetKeyFromBase64("PresharedKey")
 		// pskKey, err := sec.GetKey("PresharedKey")
 		if err != nil {
-			return nil, fmt.Errorf("Error while retrieving peer psk (%w)", err)
+			return nil, fmt.Errorf("error while retrieving peer psk (%w)", err)
 		}
 		psk = PresharedKey(pskKey)
 	} else {
@@ -155,7 +155,7 @@ func (vpn *WGVPN) RemovePeerFromPublicKey(k Key) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("This peer (%s) is not in the VPN", k.Base64())
+	return fmt.Errorf("this peer (%s) is not in the VPN", k.Base64())
 }
 
 // Save write the vpn config into a file (server conf only)
@@ -215,7 +215,7 @@ func (vpn *WGVPN) ProvideNetSlice() (*NetSlice, error) {
 			ip, ok := <-list
 			// return error if no IP remains
 			if !ok {
-				return nil, fmt.Errorf("No available IP")
+				return nil, fmt.Errorf("no available IP")
 			}
 			// check if the ip is reserved
 			// and if it is a special address

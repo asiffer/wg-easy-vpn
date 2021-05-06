@@ -47,48 +47,51 @@ func Test16GSConvert(t *testing.T) {
 		t.Error(err)
 	}
 	img16, err := os.Create(pngTruthQrCode)
+	if err != nil {
+		t.Fatal(err)
+	}
 	png.Encode(img16, to16bitsGrayScale(img))
 }
 
 func TestQRCode(t *testing.T) {
-	title("Exporting to QRCode (PNG)")
+	title("exporting to QRCode (PNG)")
 	msg := "Hello World!"
 	reader := bytes.NewReader([]byte(msg))
 
 	out, err := os.Create(pngTestQrCode)
 	if err != nil {
-		t.Errorf("Error while opening PNG test file (%w)", err)
+		t.Errorf("error while opening PNG test file (%w)", err)
 	}
 
-	err = ExportConfig(reader, out)
+	ExportConfig(reader, out)
 	// fmt.Println(err)
 	out.Close()
 
-	rawTruth, err := ioutil.ReadFile(pngTruthQrCode)
+	rawTruth, _ := ioutil.ReadFile(pngTruthQrCode)
 	hashTruth := sha256.Sum256(rawTruth)
 
-	rawTest, err := ioutil.ReadFile(pngTestQrCode)
+	rawTest, _ := ioutil.ReadFile(pngTestQrCode)
 	hashTest := sha256.Sum256(rawTest)
 
-	if bytes.Compare(hashTest[:], hashTruth[:]) != 0 {
+	if !bytes.Equal(hashTest[:], hashTruth[:]) {
 		t.Error("Bad hash")
 	}
 }
 
 func TestPlainTextQRCode(t *testing.T) {
-	title("Exporting to QRCode (TXT)")
+	title("exporting to QRCode (TXT)")
 	msg := "Hello World!"
 	reader := bytes.NewReader([]byte(msg))
 	ExportConfig(reader, os.Stdout)
 }
 
 func TestJPGQRCode(t *testing.T) {
-	title("Exporting to QRCode (JPG)")
+	title("exporting to QRCode (JPG)")
 	msg := "Hello World!"
 	reader := bytes.NewReader([]byte(msg))
 	out, err := os.Create(jpgTestQrCode)
 	if err != nil {
-		t.Errorf("Error while opening PNG test file (%w)", err)
+		t.Errorf("error while opening PNG test file (%w)", err)
 	}
 	ExportConfig(reader, out)
 }

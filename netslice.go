@@ -36,7 +36,7 @@ func NewNetSliceFromString(s string) (NetSlice, error) {
 // slice of strings looking like ["addr/mask", "addr/mask" ...]
 func NewNetSliceFromStringSlice(slice []string) (NetSlice, error) {
 	if len(slice) == 0 {
-		return nil, fmt.Errorf("Empty input slice")
+		return nil, fmt.Errorf("empty input slice")
 	}
 	return NewNetSliceFromString(strings.Join(slice, ","))
 }
@@ -51,7 +51,7 @@ func (ns *NetSlice) Increment() error {
 	for _, n := range *ns {
 		newIP := incrementIP(n.IP)
 		if newIP == nil {
-			return errors.New("Cannot increment (limit case, last byte is 255)")
+			return errors.New("cannot increment (limit case, last byte is 255)")
 		}
 		n.IP = newIP
 	}
@@ -96,7 +96,7 @@ func Iterate(n *net.IPNet) (chan net.IP, chan bool) {
 	// free bits to zero
 	base := n.IP.Mask(n.Mask)
 	// init channels
-	c := make(chan net.IP, 0)
+	c := make(chan net.IP)
 	stop := make(chan bool, 1)
 	//
 	size := len(base)

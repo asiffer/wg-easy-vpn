@@ -39,17 +39,17 @@ func getPublicKeyFromFile(p string) (string, error) {
 	// vpn, err := ReadVPN(file)
 	file, err := ParseFile(p)
 	if err != nil {
-		return "", fmt.Errorf("Error while parsing %s (%v)", file, err)
+		return "", fmt.Errorf("error while parsing %s (%v)", file, err)
 	}
 
 	sec, err := file.GetSection("Interface")
 	if err != nil {
-		return "", fmt.Errorf("Error while getting Interface section from %s (%v)", p, err)
+		return "", fmt.Errorf("error while getting Interface section from %s (%v)", p, err)
 	}
 
 	key, err := sec.GetKeyFromBase64("PrivateKey")
 	if err != nil {
-		return "", fmt.Errorf("Error while retrieving PrivateKey from %s (%v)", file, err)
+		return "", fmt.Errorf("error while retrieving PrivateKey from %s (%v)", file, err)
 	}
 	return key.Public().Base64(), nil
 }
@@ -136,7 +136,7 @@ func mapIPStrList(l []string) ([]net.IP, error) {
 	for i := 0; i < length; i++ {
 		out[i] = net.ParseIP(l[i])
 		if out[i] == nil {
-			return nil, fmt.Errorf("Error while parsing IP: %s", l[i])
+			return nil, fmt.Errorf("error while parsing IP: %s", l[i])
 		}
 	}
 	return out, nil
@@ -153,10 +153,7 @@ func mapIPList(l []net.IP) []string {
 
 func fileExist(file string) bool {
 	_, err := os.Stat(file)
-	if err == nil {
-		return true
-	}
-	return false
+	return err == nil
 }
 
 func copyIP(ip net.IP) net.IP {

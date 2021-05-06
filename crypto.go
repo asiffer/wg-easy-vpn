@@ -72,7 +72,7 @@ func NewRandomPresharedKey() PresharedKey {
 // UpdateFromBytes update a key from a given slice
 func (key Key) UpdateFromBytes(slice []byte) error {
 	if len(slice) < KeyLen {
-		return fmt.Errorf("The input slice is not big enough (expected %d, got %d)", KeyLen, len(slice))
+		return fmt.Errorf("the input slice is not big enough (expected %d, got %d)", KeyLen, len(slice))
 	}
 	for i, v := range slice {
 		key[i] = v
@@ -126,7 +126,7 @@ func (psk PresharedKey) Base64() string {
 // UpdateFromBytes update a PSK from a given slice
 func (psk PresharedKey) UpdateFromBytes(slice []byte) error {
 	if len(slice) < PSKLen {
-		return fmt.Errorf("The input slice is not big enough (expected %d, got %d)", KeyLen, len(slice))
+		return fmt.Errorf("the input slice is not big enough (expected %d, got %d)", KeyLen, len(slice))
 	}
 	for i, v := range slice {
 		psk[i] = v

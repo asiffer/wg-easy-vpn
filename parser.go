@@ -97,7 +97,7 @@ func (s *Section) Get(key string) (string, error) {
 	if exist {
 		return value, nil
 	}
-	return "", fmt.Errorf("Unknown key %s", key)
+	return "", fmt.Errorf("unknown key %s", key)
 }
 
 // GetInt returns a value given a key and tries to convert it
@@ -167,7 +167,7 @@ func (s *Section) GetIPArray(key string) ([]net.IP, error) {
 		ip := net.ParseIP(strings.TrimSpace(v))
 		// ip, _, err := net.ParseCIDR(strings.TrimSpace(v))
 		if ip == nil {
-			return nil, fmt.Errorf("Error while parsing IP %s", s)
+			return nil, fmt.Errorf("error while parsing IP %s", s)
 		}
 		// if err != nil {
 		// 	return nil, err
@@ -201,7 +201,7 @@ func (s *Section) GetNetSlice(key string) (*NetSlice, error) {
 	networks, err := NewNetSliceFromString(addr)
 	// networks, err := mapIPNetStrList(strings.Split(addr, ","))
 	if err != nil {
-		return nil, fmt.Errorf("Error while parsing %s (%v)", addr, err)
+		return nil, fmt.Errorf("error while parsing %s (%v)", addr, err)
 	}
 	return &networks, nil
 }
@@ -309,7 +309,7 @@ func (f *File) GetSection(name string) (*Section, error) {
 			return sec, nil
 		}
 	}
-	return nil, fmt.Errorf("Unknown section")
+	return nil, fmt.Errorf("unknown section")
 }
 
 func (f *File) String() string {
