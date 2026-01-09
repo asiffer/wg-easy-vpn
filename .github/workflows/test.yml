@@ -1,7 +1,7 @@
 name: Test
+
 on:
-  repository_dispatch:
-    types: update-test
+  push:
 
 jobs:
   test:
@@ -10,21 +10,19 @@ jobs:
       GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - name: Checkout
+        uses: actions/checkout@v5
         with:
-          fetch-depth: 1
-          path: go/src/wg-easy-vpn
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v5
 
-      - uses: actions/setup-go@v1
-        with:
-          go-version: '1.14.1'
+      - name: Run tests
+        run: go test -race -coverprofile=coverage.out -covermode=atomic ./...
 
-      - name: Run Unit tests.
-        run: make deps; make cover
-        working-directory: go/src/wg-easy-vpn
-      
-      - name: Upload Coverage report to CodeCov
-        uses: codecov/codecov-action@v1.0.0
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: go/src/wg-easy-vpn/coverage.txt
+          files: coverage.out
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
