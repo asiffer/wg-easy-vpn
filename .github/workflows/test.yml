@@ -11,19 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.25.5'
-
-      - name: Run tests
-        run: go test -race -coverprofile=coverage.out -covermode=atomic ./...
+        uses: actions/setup-go@v6
+      - name: Test
+        run: make test
         env:
+          # see https://stackoverflow.com/a/79780883
           GOTOOLCHAIN: go1.25.5+auto
-
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
