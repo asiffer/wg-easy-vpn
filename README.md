@@ -108,6 +108,5 @@ Moreover, the IP (re-)assignement is likely to fail after a client has been remo
 ## Next 
 
 - Support `PostUp` and `PostDown` options
-- Manage `server-dir` and `client-dir` directly in the `.wg-easy-vpn.conf` file
 - I think that many bugs are likely to occur, so I will probably spend time to test and fix.
 
