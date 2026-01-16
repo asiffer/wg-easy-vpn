@@ -1,15 +1,14 @@
-# wg-easy-vpn
+<p align="center">
+  <img src="assets/logo.png" alt="logo">
+</p>
+<p align="center">
+  Setup a Wireguard VPN simply
+</p>
+<p align="center">
+    <img src="https://github.com/asiffer/wg-easy-vpn/actions/workflows/build.yml/badge.svg" href="https://github.com/asiffer/wg-easy-vpn/actions/workflows/build.yml" alt="build">
+    <img src="https://github.com/asiffer/wg-easy-vpn/actions/workflows/test.yml/badge.svg" href="https://github.com/asiffer/wg-easy-vpn/actions/workflows/test.yml" alt="test">
+</p>
 
-![Build](https://github.com/asiffer/wg-easy-vpn/workflows/Build/badge.svg)
-![Test](https://github.com/asiffer/wg-easy-vpn/workflows/Test/badge.svg)
-[![Coverage](https://codecov.io/gh/asiffer/wg-easy-vpn/branch/master/graph/badge.svg)](https://codecov.io/gh/asiffer/wg-easy-vpn)
-
-
-![logo](assets/logo.png)
-
-Setup a Wireguard VPN simply
-
----
 
 wg-easy-vpn is a tool designed to ease the set-up of a[WireGuard®](https://www.wireguard.com/) VPN. 
 
@@ -40,6 +39,19 @@ You can add a client (it will print its config to stdout).
 wg-easy-vpn add -c new-client wg0
 ```
 
+## Guides
+
+**Send client config through ssh**
+
+```shell
+wg-easy-vpn add -c new-client wg0 | ssh user@new-client 'sudo cat > /etc/wireguard/wg0.conf'
+```
+
+**Export client config as qrcode**
+
+```shell
+wg-easy-vpn add -c new-client --qrcode wg0
+```
 
 ## Advanced configuration
 
