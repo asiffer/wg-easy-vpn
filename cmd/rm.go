@@ -17,18 +17,10 @@ var rmCmd = cli.Command{
 	EnableShellCompletion: true,
 	Suggest:               true,
 	Flags: []cli.Flag{
-		&cli.StringFlag{
-			Name:     "peer",
-			Aliases:  []string{"p"},
-			Usage:    "Public key of the peer to remove",
-			Required: true,
-		},
+		&peerFlag,
 	},
 	Arguments: []cli.Argument{
-		&cli.StringArg{
-			Name:   CONNECTION_ARG,
-			Config: cli.StringConfig{TrimSpace: true},
-		},
+		&connArg,
 	},
 	Action: func(ctx context.Context, c *cli.Command) error {
 		config, err := buildRmCmdConfig(c)
@@ -57,7 +49,7 @@ func buildRmCmdConfig(c *cli.Command) (*rmConfig, error) {
 	return cfg, nil
 }
 
-func rmAction(ctx context.Context, config *rmConfig) error {
+func rmAction(_ context.Context, config *rmConfig) error {
 	// Get connection name and path
 	_, path, err := ConfigurationInfo(config.name)
 	if err != nil {

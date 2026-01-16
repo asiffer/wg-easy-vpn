@@ -16,52 +16,15 @@ var initCmd = cli.Command{
 	EnableShellCompletion: true,
 	Suggest:               true,
 	Flags: []cli.Flag{
-		&cli.BoolFlag{
-			Name:  "no-psk",
-			Usage: "Do not generate preshared keys",
-			// Destination: &config.noPSK,
-			Value: false,
-		},
-		&cli.StringFlag{
-			Name: "endpoint",
-			// Destination: &config.endpoint,
-			Usage:    "Public endpoint (IP or domain) of the Wireguard server (ex: mydomain.com:52820)",
-			Required: true,
-		},
-		&cli.StringSliceFlag{
-			Name:    "networks",
-			Aliases: []string{"n"},
-			Usage:   "VPN networks",
-			// Destination: &config.networks,
-			Value: []string{DefaultNetwork},
-		},
-		&cli.StringSliceFlag{
-			Name:        "dns",
-			Usage:       "DNS servers for the VPN clients",
-			DefaultText: "DNS servers",
-			// Destination: &config.dns,
-			Value: nil,
-		},
-		&cli.StringSliceFlag{
-			Name:    "routes",
-			Aliases: []string{"r"},
-			Usage:   "Routes tunneled through the VPN",
-			Value:   []string{"0.0.0.0/0", "::/0"},
-			// Destination: &config.routes,
-		},
-		&cli.Uint16Flag{
-			Name:  "port",
-			Usage: "UDP port the Wireguard server will listen on",
-			// Destination: &config.port,
-			Value: DefaultListeningPort,
-		},
+		&noPSKFlag,
+		&endpointFlag,
+		&networksFlag,
+		&dnsFlag,
+		&routesFlag,
+		&portFlag,
 	},
 	Arguments: []cli.Argument{
-		&cli.StringArg{
-			Name:      CONNECTION_ARG,
-			UsageText: "Wireguard connection name (ex: wg0)",
-			Config:    cli.StringConfig{TrimSpace: true},
-		},
+		&connArg,
 	},
 	Action: func(ctx context.Context, c *cli.Command) error {
 		config, err := buildInitCmdConfig(c)
@@ -117,7 +80,7 @@ func buildInitCmdConfig(c *cli.Command) (*initConfig, error) {
 	return cfg, nil
 }
 
-func initAction(ctx context.Context, config *initConfig) error {
+func initAction(_ context.Context, config *initConfig) error {
 	// name of the connection and path to the config file
 	name, path, err := ConfigurationInfo(config.conn)
 	if err != nil {

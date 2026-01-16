@@ -17,40 +17,14 @@ var addCmd = cli.Command{
 	EnableShellCompletion: true,
 	Suggest:               true,
 	Flags: []cli.Flag{
-		&cli.BoolFlag{
-			Name:  "no-psk",
-			Usage: "Do not generate preshared keys",
-			Value: false,
-		},
-		&cli.StringFlag{
-			Name:     "client",
-			Aliases:  []string{"c"},
-			Usage:    "New client to add to the VPN",
-			Required: true,
-		},
-		&cli.StringSliceFlag{
-			Name:    "routes",
-			Aliases: []string{"r"},
-			Usage:   "Routes tunneled through the VPN",
-			Value:   []string{"0.0.0.0/0", "::/0"},
-		},
-		&cli.StringSliceFlag{
-			Name:        "dns",
-			Usage:       "DNS servers for the VPN clients",
-			DefaultText: "DNS servers",
-			Value:       nil,
-		},
-		&cli.BoolFlag{
-			Name:  "qrcode",
-			Usage: "export the config to a qrcode",
-			Value: false,
-		},
+		&noPSKFlag,
+		&clientFlag,
+		&routesFlag,
+		&dnsFlag,
+		&qrcodeFlag,
 	},
 	Arguments: []cli.Argument{
-		&cli.StringArg{
-			Name:   CONNECTION_ARG,
-			Config: cli.StringConfig{TrimSpace: true},
-		},
+		&connArg,
 	},
 	Action: func(ctx context.Context, c *cli.Command) error {
 		config, err := buildAddCmdConfig(c)
@@ -98,7 +72,7 @@ func buildAddCmdConfig(c *cli.Command) (*addConfig, error) {
 	return cfg, nil
 }
 
-func addAction(ctx context.Context, config *addConfig) error {
+func addAction(_ context.Context, config *addConfig) error {
 	// Get connection name and path
 	name, path, err := ConfigurationInfo(config.name)
 	if err != nil {
