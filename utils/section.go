@@ -11,10 +11,16 @@ import (
 	"github.com/rs/zerolog"
 )
 
+// KeyValue represents a key-value pair in a section
+type KeyValue struct {
+	Key   string
+	Value string
+}
+
 // Section represents a basic block like [Interface] or [Peer]
 type Section struct {
 	name     string
-	data     map[string]string
+	data     []KeyValue
 	comments []string
 }
 
@@ -22,7 +28,7 @@ type Section struct {
 func NewSection(name string) *Section {
 	return &Section{
 		name:     name,
-		data:     make(map[string]string),
+		data:     make([]KeyValue, 0),
 		comments: make([]string, 0),
 	}
 }
@@ -34,24 +40,44 @@ func (s *Section) Name() string {
 
 // HasKey returns whether the section has the given key
 func (s *Section) HasKey(key string) bool {
-	_, exist := s.data[key]
-	return exist
+	for _, kv := range s.data {
+		if kv.Key == key {
+			return true
+		}
+	}
+	return false
 }
 
-// Set defines a pair key/value
+// Set defines a pair key/value (replaces existing key if present)
 func (s *Section) Set(key string, value string) error {
 	if err := checkKey(key); err != nil {
 		return err
 	}
-	s.data[key] = value
+	for i, kv := range s.data {
+		if kv.Key == key {
+			s.data[i].Value = value
+			return nil
+		}
+	}
+	s.data = append(s.data, KeyValue{Key: key, Value: value})
 	return nil
 }
 
-// Get returns the raw value (string) related to a key
+// Add appends a key/value pair (allows duplicate keys)
+func (s *Section) Add(key string, value string) error {
+	if err := checkKey(key); err != nil {
+		return err
+	}
+	s.data = append(s.data, KeyValue{Key: key, Value: value})
+	return nil
+}
+
+// Get returns the raw value (string) related to a key (first match)
 func (s *Section) Get(key string) (string, error) {
-	value, exist := s.data[key]
-	if exist {
-		return value, nil
+	for _, kv := range s.data {
+		if kv.Key == key {
+			return kv.Value, nil
+		}
 	}
 	return "", fmt.Errorf("unknown key %s", key)
 }
@@ -165,8 +191,8 @@ func (s *Section) StringNoHeader() string {
 	for _, comment := range s.comments {
 		str += fmt.Sprintf("# %s\n", comment)
 	}
-	for key, value := range s.data {
-		str += fmt.Sprintf("%s = %s\n", key, value)
+	for _, kv := range s.data {
+		str += fmt.Sprintf("%s = %s\n", kv.Key, kv.Value)
 	}
 	return str
 }
@@ -176,15 +202,15 @@ func (s *Section) AddComment(comment string) {
 }
 
 func (s *Section) Log(event *zerolog.Event) *zerolog.Event {
-	for k, v := range s.data {
-		event = event.Str(fmt.Sprintf("%s.%s", s.name, k), v)
+	for _, kv := range s.data {
+		event = event.Str(fmt.Sprintf("%s.%s", s.name, kv.Key), kv.Value)
 	}
 	return event
 }
 
 func (s *Section) LogWithoutName(event *zerolog.Event) *zerolog.Event {
-	for k, v := range s.data {
-		event = event.Str(k, v)
+	for _, kv := range s.data {
+		event = event.Str(kv.Key, kv.Value)
 	}
 	return event
 }

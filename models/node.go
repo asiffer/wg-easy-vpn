@@ -11,9 +11,11 @@ import (
 
 // WGNode defines a Wireguard node (client or server)
 type WGNode struct {
-	address []net.IPNet
-	private crypto.Key
-	psk     crypto.PresharedKey
+	address  []net.IPNet
+	private  crypto.Key
+	psk      crypto.PresharedKey
+	preUp    []string
+	postDown []string
 }
 
 // NewWGNode creates a new Node (generates random key and psk)
@@ -59,6 +61,18 @@ func (node *WGNode) String() string {
 func (node *WGNode) Populate(section *utils.Section) {
 	section.Set("Address", node.Address())
 	section.Set("PrivateKey", node.Private())
+	for _, cmd := range node.preUp {
+		section.Add("PreUp", cmd)
+	}
+	for _, cmd := range node.postDown {
+		section.Add("PostDown", cmd)
+	}
+}
+
+// SetHooks sets the PreUp and PostDown hooks for this node
+func (node *WGNode) SetHooks(preUp, postDown []string) {
+	node.preUp = preUp
+	node.postDown = postDown
 }
 
 // ToPeer turns a Node into a Peer

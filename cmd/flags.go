@@ -65,3 +65,9 @@ var clientFlag = cli.StringFlag{
 	Usage:    "New client to add to the VPN",
 	Required: true,
 }
+
+var wanFlag = cli.StringFlag{
+	Name:  "wan",
+	Usage: "WAN interface for NAT masquerading (auto = auto-detect, empty = disabled)",
+	Value: "",
+}
