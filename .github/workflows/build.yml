@@ -1,61 +1,42 @@
 name: Build
+
 on:
-  repository_dispatch:
-    types: update-build
+  push:
 
 jobs:
   build:
-    name: Build
-    env:
-      GOPATH: /home/runner/work/wg-easy-vpn/wg-easy-vpn/go
     runs-on: ubuntu-latest
+    env:
+      GOTOOLCHAIN: go1.25.5+auto
     steps:
-      - uses: actions/checkout@master
+      - name: Checkout
+        uses: actions/checkout@v6
         with:
-          fetch-depth: 1
-          path: go/src/wg-easy-vpn
-
-      - uses: actions/setup-go@v1
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v6
         with:
-          go-version: '1.14.1'
-      
-      - name: Install packages
-        uses: mstksg/get-package@v1
+          go-version-file: 'go.mod'
+      - name: Build
+        run: make all
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
         with:
-          apt-get: software-properties-common byacc flex dpkg-dev debhelper crossbuild-essential-armel crossbuild-essential-armhf crossbuild-essential-arm64
-      
-      - name: Get dependencies
-        working-directory: go/src/wg-easy-vpn
-        run: |
-          env | grep GO
-          go env
-          pwd
-          ls -al
-          make deps
-
-      - name: Build binaries
-        working-directory: go/src/wg-easy-vpn
-        run: |
-          make GOARCH=amd64
-          make GOARCH=arm64
-          make GOARCH=arm GOARM=7
-        
-      - name: Create debian packages
-        working-directory: go/src/wg-easy-vpn
-        run: |
-          make doc
-          make debian-no-sign GOARCH=amd64
-          make debian-no-sign GOARCH=arm64
-          make debian-no-sign GOARCH=arm GOARM=7
-
-      - name: Upload binaries
-        uses: actions/upload-artifact@v1
+          # A file, directory or wildcard pattern that describes what to upload
+          # Required.
+          path: dist/*
+  
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref_type == 'tag'
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: wg-easy-vpn-bin
-          path: go/src/wg-easy-vpn/bin/
-      
-      - name: Upload debian packages
-        uses: actions/upload-artifact@v1
-        with:
-          name: wg-easy-vpn-deb
-          path: go/src/wg-easy-vpn/dist/
+          files: dist/*
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

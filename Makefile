@@ -1,103 +1,36 @@
-# Makefile to build wg-easy-vpn
-#
-#
+# Makefile to build wg-easy-vpn
 
-# Shell
-SHELL       := /bin/bash
 # Go Compiler
-GO          := $(shell command -v go)
-GO_VERSION  := $(shell $(GO) version)
-# Targeted arch
-GOARCH      := $(if $(GOARCH),$(GOARCH),$(shell $(GO) env GOARCH))
-GOARM       := 
-ARCH        := GOARCH=$(GOARCH)
-DPKG_ARCH   := $(GOARCH)
+GO         := $(shell command -v go)
+ARCHES     := 386 amd64 arm64 armv6 armv7
+OUTPUT_DIR := dist
 
-# ARM 32 bits cases
-ifeq ($(GOARCH), arm)
-	GOARM     := $(if $(GOARM), $(GOARM), 7)
-	ARCH      := $(ARCH) GOARM=$(GOARM)
-	DPKG_ARCH := armhf
-	ifneq ($(GOARM), 7)
-		DPKG_ARCH := armel
-	endif
-endif
+# $(call goarch,<arch>)
+goarch = \
+  $(if $(filter armv6 armv7,$1),arm,$1)
 
+# $(call goarm,<arch>)
+goarm = $(if $(filter armv6,$1),6,$(if $(filter armv7,$1),7,))
 
-# Binary name
-BIN		    := wg-easy-vpn
-# Binary directory (where binaries are copied)
-BIN_DIR     := ./bin
-# Where the debian packages are stored
-DIST_DIR    := ./dist
-# Installation directory
-INSTALL_DIR := $(DESTDIR)/usr/bin
-# Fancyness
-OK          := "[\e[32mOK\e[0m]"
-ERROR       := "[\e[31mERROR\e[0m]"
+.PHONY = test clean
 
-# Print compiler version
-$(info Go compiler located at $(GO) ($(GO_VERSION)))
+# basic make command
+wg-easy-vpn: main.go */*.go
+	$(GO) build -o $@ $<
 
-# Forced operations
-.PHONY: test clean install debian
+# arch specific builds
+$(OUTPUT_DIR)/wg-easy-vpn-linux-%: main.go */*.go
+	@mkdir -p $(OUTPUT_DIR)
+	GOOS=linux GOARCH=$(call goarch,$*) GOARM=$(call goarm,$*) $(GO) build -ldflags "-w -s" -o $@ $<
 
-default: build
+all: $(foreach arch,$(ARCHES),$(OUTPUT_DIR)/wg-easy-vpn-linux-$(arch))
 
-deps:
-	@echo -n "Retrieving dependencies      "
-	@$(ARCH) $(GO) get -u ./...
-	@echo -e ${OK}
+coverage.out: main.go */*.go
+	$(GO) test -coverprofile=coverage.out -covermode=atomic ./...
 
-build:
-	@echo -n "Building $(BIN)              "
-	@$(ARCH) $(GO) build -o $(BIN) *.go
-	@mkdir -p $(BIN_DIR)/$(DPKG_ARCH)
-	@cp $(BIN) $(BIN_DIR)/$(BIN)-$(DPKG_ARCH)
-	@echo -e ${OK}
-
-install:
-	@echo -n "Installing $(BIN) to $(INSTALL_DIR) "
-	@mkdir -p $(INSTALL_DIR)
-	@install $(BIN) $(INSTALL_DIR)
-	@echo -e ${OK}
-
-test:
-	@echo -n "Testing $(BIN)               "
-	@r="$(shell GOARCH=$(GOARCH) $(GO) test -v | tail -n1)"; \
-		if (("$${r:0:2}" == "ok")); then \
-			echo -e ${OK}; \
-		else \
-			echo -e ${ERROR}; \
-		fi
-
-cover:
-	@echo -n "Code coverage: "
-	@GOARCH=$(GOARCH) $(GO) test -cover -coverprofile coverage.txt . | awk -F ' ' '{printf "%.1f%% ",$$5}'
-	@echo -e ${OK}
-
-debian:
-	@echo "Creating debian package      "
-	@dpkg-buildpackage -a $(DPKG_ARCH) -b
-	@mkdir -p dist/
-	@mv ../wg-easy-vpn_*.deb dist/
-	@echo -e ${OK}
-
-debian-no-sign:
-	@echo "Creating debian package      "
-	@dpkg-buildpackage -a $(DPKG_ARCH) -b --no-sign
-	@mkdir -p dist/
-	@mv ../wg-easy-vpn_*.deb dist/
-	@echo -e ${OK}
-
-doc: 
-	@echo -n "Generating documentation          "
-	@$(GO) test -run TestGenDoc 
-	@mv /tmp/wg-easy-vpn.ex wg-easy-vpn.1
-	@echo -e ${OK}
+test: coverage.out
 
 clean:
-	@echo -n "Removing binaries wg-easy-vpn-*   "
-	@rm -rf $(BIN) $(BIN)-*
-	@rm -rf debian/$(BIN)
-	@echo -e ${OK}
+	rm -f coverage.out
+	rm -f wg-easy-vpn
+	rm -rf $(OUTPUT_DIR)
